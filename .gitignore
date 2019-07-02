@@ -16,4 +16,8 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+.idea
 /test/
+*_test.go
+/Gopkg.lock
+/Gopkg.toml
