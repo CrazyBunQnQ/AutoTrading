@@ -43,12 +43,22 @@ type otcbtc struct {
 
 const configFile = "config_private.yaml"
 
-func Conf() conf {
+var DBConf database
+var BianConf binance
+var HuoBiConf huobi
+var OkexConf okex
+var OtcbtcConf otcbtc
+
+func init() {
 	yamlFile, _ := ioutil.ReadFile(configFile)
 	var c conf
 	err := yaml.Unmarshal(yamlFile, &c)
 	if err != nil {
 		log.Fatalf("cannot unmarshal data: %v", err)
 	}
-	return c
+	DBConf = c.Database
+	BianConf = c.Binance
+	HuoBiConf = c.Huobi
+	OkexConf = c.Okex
+	OtcbtcConf = c.Otcbtc
 }
