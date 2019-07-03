@@ -1,0 +1,16 @@
+database:
+  addr: localhost
+  port: 3306
+  uname: root
+  pwd: your db password
+
+binance:
+  baseurl: https://api.binance.com
+  uname: your user name
+  pwd: your password
+  api_key_private: your api key
+  secret_key_private: your secret key
+  api_key_public: your order api key
+  secret_key_public: your order secret key
+
+version: 1.0
