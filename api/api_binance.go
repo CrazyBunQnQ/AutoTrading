@@ -7,9 +7,18 @@ import (
 	"net/http"
 )
 
+const SettingFile = "config_private.yaml"
+
+var baseurl string
+
+func init() {
+	config := Conf().Binance
+	baseurl = config.BaseUrl
+}
+
 // Ping Test server connectivity
 func Ping() bool {
-	resp, err := http.Get("https://api.binance.com/api/v1/ping")
+	resp, err := http.Get(baseurl + "/api/v1/ping")
 	if err != nil {
 		log.Println(err)
 		return false
@@ -20,7 +29,7 @@ func Ping() bool {
 
 // Time Get server time
 func Time() int64 {
-	resp, err := http.Get("https://api.binance.com/api/v1/time")
+	resp, err := http.Get(baseurl + "/api/v1/time")
 	if err != nil {
 		log.Println(err)
 		return 0

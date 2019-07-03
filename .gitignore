@@ -21,4 +21,4 @@
 *_test.go
 /Gopkg.lock
 /Gopkg.toml
-*_private.json
+*_private.*
