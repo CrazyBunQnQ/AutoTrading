@@ -3,16 +3,20 @@ package util
 import (
 	"AutoTrading/api"
 	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-//const dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@/" + api.DBConf.Addr
+var dbsource string
+
+func init() {
+	dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@/" + api.DBConf.Schema
+}
 
 func GetMySQL() *sql.DB {
-	db, err := sql.Open("mysql", api.DBConf.UserName+":"+api.DBConf.Password+"@/"+api.DBConf.Addr)
+	db, err := sql.Open("mysql", dbsource)
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
 	}
-	defer db.Close()
 
 	// Open doesn't open a connection. Validate DSN data:
 	err = db.Ping()
@@ -22,12 +26,31 @@ func GetMySQL() *sql.DB {
 	return db
 }
 
-func Select(sql string) {
+func Query(sql string) *sql.Row {
 	db := GetMySQL()
+	defer db.Close()
 	// Prepare statement for reading data
-	stmtOut, err := db.Prepare("SELECT squareNumber FROM squarenum WHERE number = ?")
+	stmtOut, err := db.Prepare(sql)
 	if err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
 	defer stmtOut.Close()
+	// Query the square-number of 13
+	row := stmtOut.QueryRow() // WHERE number = 13
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	return row
+}
+
+func Exec(sql string) {
+	db := GetMySQL()
+	defer db.Close()
+	// Prepare statement for inserting data
+	stmtIns, err := db.Prepare(sql) // ? = placeholder
+	if err != nil {
+		panic(err.Error()) // proper error handling instead of panic in your app
+	}
+	defer stmtIns.Close() // Close the statement when we leave main() / the program terminates
+	stmtIns.Exec()
 }
