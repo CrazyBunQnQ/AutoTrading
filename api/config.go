@@ -40,6 +40,7 @@ type okex struct {
 }
 
 type otcbtc struct {
+	BaseUrl string `yaml:"baseurl"`
 }
 
 const configFile = "../api/config_private.yaml"
