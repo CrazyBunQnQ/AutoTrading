@@ -7,12 +7,8 @@ import (
 	"net/http"
 )
 
-func OtcbtcDepth(symbol string, limit int32) string {
-	//requestBody, err := jsoniter.Marshal(map[string]string{
-	//	"symbol": symbol,
-	//	"limit":  string(limit),
-	//})
-	resp, err := http.Get(fullBianApi("/api/v2/depth"))
+func OtcbtcDepth(symbol string, limit string) string {
+	resp, err := http.Get(fullOtcbtcApi("/api/v2/depth?market=" + symbol + "&limit=" + limit))
 	if err != nil {
 		log.Println(err)
 		return ""

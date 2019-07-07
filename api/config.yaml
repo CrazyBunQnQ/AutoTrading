@@ -14,4 +14,7 @@ binance:
   api_key_public: your order api key
   secret_key_public: your order secret key
 
+otcbtc:
+  baseurl: https://bb.otcbtc.com
+
 version: 1.0

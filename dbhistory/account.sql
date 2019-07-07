@@ -1,3 +1,4 @@
+use autotrade;
 create table account
 (
     id  varchar(10)           not null,

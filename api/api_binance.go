@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func BianDepth(symbol string, limit int32) string {
-	resp, err := http.Get(fullBianApi("/api/v1/depth"))
+func BianDepth(symbol string, limit string) string {
+	resp, err := http.Get(fullBianApi("/api/v1/depth?symbol=" + symbol + "&limit=" + limit))
 	if err != nil {
 		log.Println(err)
 		return ""

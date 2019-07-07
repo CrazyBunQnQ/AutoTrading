@@ -53,6 +53,10 @@ var OtcbtcConf otcbtc
 
 func init() {
 	yamlFile, _ := ioutil.ReadFile(configFile)
+	if yamlFile == nil {
+		log.Println("未找到配置文件 " + configFile)
+		os.Exit(1)
+	}
 	var c conf
 	err := yaml.Unmarshal(yamlFile, &c)
 	if err != nil {
