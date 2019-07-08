@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	log.Println(api.OtcbtcDepth("btcusdt", "1"))
-	log.Println(api.BianDepth("BTCUSDT", "5"))
+	log.Println(api.OtcbtcTrades("btcusdt", "1").Get(0).ToString())
+	log.Println(api.BianTrades("BTCUSDT", "1").Get(0).ToString())
 }
