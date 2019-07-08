@@ -2,39 +2,18 @@ package api
 
 import (
 	jsoniter "github.com/json-iterator/go"
-	"io/ioutil"
-	"log"
-	"net/http"
 )
 
-func OtcbtcDepth(symbol string, limit string) string {
-	resp, err := http.Get(fullOtcbtcApi("/api/v2/depth?market=" + symbol + "&limit=" + limit))
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-		return ""
-	}
-	return jsoniter.Get(body).ToString()
+func OtcbtcDepth(symbol string, limit string) jsoniter.Any {
+	return otcbtcApiJsonResult("/api/v2/depth?market=" + symbol + "&limit=" + limit)
 }
 
-func OtcbtcTickers(symbol string) string {
-	resp, err := http.Get(fullOtcbtcApi("/api/v2/tickers") + symbol)
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-		return ""
-	}
-	return jsoniter.Get(body).ToString()
+func OtcbtcTickers(symbol string) jsoniter.Any {
+	return otcbtcApiJsonResult("/api/v2/tickers/" + symbol)
+}
+
+func otcbtcApiJsonResult(fullApi string) jsoniter.Any {
+	return httpGetJsonStr(fullOtcbtcApi(fullApi))
 }
 
 func fullOtcbtcApi(api string) string {

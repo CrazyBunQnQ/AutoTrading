@@ -7,35 +7,17 @@ import (
 	"net/http"
 )
 
-func BianDepth(symbol string, limit string) string {
-	resp, err := http.Get(fullBianApi("/api/v1/depth?symbol=" + symbol + "&limit=" + limit))
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-		return ""
-	}
-	return jsoniter.Get(body).ToString()
+func BianTrades(symbol string, limit string) jsoniter.Any {
+	return bianApiJsonResult("/api/v1/trades?symbol=" + symbol + "&limit=" + limit)
+}
+
+func BianDepth(symbol string, limit string) jsoniter.Any {
+	return bianApiJsonResult("/api/v1/depth?symbol=" + symbol + "&limit=" + limit)
 }
 
 // Exchange information
-func ExchangeInfo() string {
-	resp, err := http.Get(fullBianApi("/api/v1/exchangeInfo"))
-	if err != nil {
-		log.Println(err)
-		return ""
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-		return ""
-	}
-	return jsoniter.Get(body).ToString()
+func ExchangeInfo() jsoniter.Any {
+	return bianApiJsonResult("/api/v1/exchangeInfo")
 }
 
 // Ping Test server connectivity
@@ -63,6 +45,10 @@ func Time() int64 {
 		return 0
 	}
 	return jsoniter.Get(body, "serverTime").ToInt64()
+}
+
+func bianApiJsonResult(fullApi string) jsoniter.Any {
+	return httpGetJsonStr(fullBianApi(fullApi))
 }
 
 func fullBianApi(api string) string {
