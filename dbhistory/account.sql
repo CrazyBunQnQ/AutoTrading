@@ -11,3 +11,5 @@ create table account
         primary key (id)
 )
     comment 'account status';
+
+alter table account add usdt float(8,8) default 0 not null comment 'usdt count';
