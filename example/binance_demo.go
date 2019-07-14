@@ -1,10 +1,10 @@
 package example
 
 import (
+	"AutoTrading/config"
 	"context"
 	"fmt"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/binance-exchange/go-binance"
@@ -19,56 +19,43 @@ func BianceDemo() {
 	logger = log.With(logger, "time", log.DefaultTimestampUTC, "caller", log.DefaultCaller)
 
 	hmacSigner := &binance.HmacSigner{
-		Key: []byte(os.Getenv("BINANCE_SECRET")),
+		Key: []byte(config.BianConf.SecretKeyPublic),
 	}
-	ctx, cancelCtx := context.WithCancel(context.Background())
+	//ctx, cancelCtx := context.WithCancel(context.Background())
+	ctx, _ := context.WithCancel(context.Background())
 	// use second return value for cancelling request
 	binanceService := binance.NewAPIService(
-		"https://www.binance.com",
-		os.Getenv("BINANCE_APIKEY"),
+		//"https://www.binance.com",
+		config.BianConf.BaseUrl,
+		config.BianConf.ApiKeyPublic,
 		hmacSigner,
 		logger,
 		ctx,
 	)
 	b := binance.NewBinance(binanceService)
 
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
-
-	kech, done, err := b.TradeWebsocket(binance.TradeWebsocketRequest{
-		Symbol: "ETHBTC",
+	trades, err := b.AggTrades(binance.AggTradesRequest{
+		Symbol: "XRPUSDT",
+		Limit:  5,
 	})
 	if err != nil {
 		panic(err)
 	}
-	go func() {
-		for {
-			select {
-			case ke := <-kech:
-				fmt.Printf("%#v\n", ke)
-			case <-done:
-				break
-			}
-		}
-	}()
-
-	fmt.Println("waiting for interrupt")
-	<-interrupt
-	fmt.Println("canceling context")
-	cancelCtx()
-	fmt.Println("waiting for signal")
-	<-done
-	fmt.Println("exit")
-	return
+	fmt.Printf("%#v\n", trades)
 
 	kl, err := b.Klines(binance.KlinesRequest{
-		Symbol:   "BNBETH",
+		Symbol:   "XRPUSDT",
 		Interval: binance.Hour,
+		//Limit: 5,
+		//StartTime:
+		//EndTime:
 	})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("%#v\n", kl)
+
+	return
 
 	newOrder, err := b.NewOrder(binance.NewOrderRequest{
 		Symbol:      "BNBETH",

@@ -1,4 +1,4 @@
-package api
+package config
 
 import (
 	"gopkg.in/yaml.v3"
@@ -26,8 +26,6 @@ type database struct {
 
 type binance struct {
 	BaseUrl          string `yaml:"baseurl"`
-	UserName         string `yaml:"uname"`
-	Password         string `yaml:"pwd"`
 	ApiKeyPrivate    string `yaml:"api_key_private"`
 	SecretKeyPrivate string `yaml:"secret_key_private"`
 	ApiKeyPublic     string `yaml:"api_key_public"`
@@ -35,7 +33,16 @@ type binance struct {
 }
 
 type huobi struct {
-	BaseUrl string `yaml:"baseurl"`
+	BaseUrl                string `yaml:"baseurl"`
+	MarketUrl              string `yaml:"market_url"`
+	TradeUrl               string `yaml:"trade_url"`
+	HostName               string `yaml:"host_name"`
+	AccessKeyPrivate       string `yaml:"access_key_private"`
+	SecretKeyPrivate       string `yaml:"secret_key_private"`
+	AccessKeyPublic        string `yaml:"access_key_public"`
+	SecretKeyPublic        string `yaml:"secret_key_public"`
+	EnablePrivateSignature string `yaml:"enable_private_signature"`
+	PrivateKeyPrime256     string `yaml:"private_key_prime_256"`
 }
 
 type okex struct {
@@ -45,8 +52,9 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
-//const configFile = "../api/config_private.yaml"
-const configFile = "api/config_private.yaml"
+const configFile = "../config/config_private.yaml"
+
+//const configFile = "config/config_private.yaml"
 
 var DBConf database
 var BianConf binance

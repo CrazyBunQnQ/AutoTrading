@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"AutoTrading/api"
+	"AutoTrading/config"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -10,7 +10,7 @@ var dbsource string
 
 func init() {
 	//dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@tcp(" + api.DBConf.Addr + ":" + api.DBConf.Port + ")/" + api.DBConf.Schema
-	dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@/" + api.DBConf.Schema
+	dbsource = config.DBConf.UserName + ":" + config.DBConf.Password + "@/" + config.DBConf.Schema
 }
 
 func GetMySQL() *sql.DB {

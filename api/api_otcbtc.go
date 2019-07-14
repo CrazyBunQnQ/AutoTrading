@@ -1,6 +1,7 @@
 package api
 
 import (
+	"AutoTrading/config"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -21,5 +22,5 @@ func otcbtcApiJsonResult(fullApi string) jsoniter.Any {
 }
 
 func fullOtcbtcApi(api string) string {
-	return OtcbtcConf.BaseUrl + api
+	return config.OtcbtcConf.BaseUrl + api
 }

@@ -1,0 +1,36 @@
+database:
+  addr: 127.0.0.1
+  port: 3306
+  schema: autotrade
+  uname: root
+  pwd: your db password
+
+binance:
+  # baseurl: https://api.binance.com
+  baseurl: https://www.binance.com
+  api_key_private: your api key
+  secret_key_private: your secret key
+  api_key_public: your order api key
+  secret_key_public: your order secret key
+
+huobi:
+  market_url: market_url
+  trade_url: trade_url
+  host_name: host_name
+
+  access_key_private: access_key_private
+  secret_key_private: secret_key_private
+  access_key_public: access_key_public
+  secret_key_public: secret_key_public
+
+  enable_private_signature: false
+
+  # generated the key by: openssl ecparam -name prime256v1 -genkey -noout -out privatekey.pem
+  # only required when Private Signature is enabled
+  # replace with your own PrivateKey from privatekey.pem
+  private_key_prime_256: private_key_prime_256
+
+otcbtc:
+  baseurl: https://bb.otcbtc.com
+
+version: 1.0

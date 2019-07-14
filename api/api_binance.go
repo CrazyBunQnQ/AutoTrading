@@ -1,6 +1,7 @@
 package api
 
 import (
+	"AutoTrading/config"
 	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"log"
@@ -52,5 +53,5 @@ func bianApiJsonResult(fullApi string) jsoniter.Any {
 }
 
 func fullBianApi(api string) string {
-	return BianConf.BaseUrl + api
+	return config.BianConf.BaseUrl + api
 }
