@@ -18,7 +18,7 @@ type conf struct {
 
 type database struct {
 	Addr     string `yaml:"addr"`
-	Port     int32  `yaml:"port"`
+	Port     string `yaml:"port"`
 	Schema   string `yaml:"schema"`
 	UserName string `yaml:"uname"`
 	Password string `yaml:"pwd"`
@@ -35,6 +35,7 @@ type binance struct {
 }
 
 type huobi struct {
+	BaseUrl string `yaml:"baseurl"`
 }
 
 type okex struct {
@@ -44,7 +45,8 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
-const configFile = "../api/config_private.yaml"
+//const configFile = "../api/config_private.yaml"
+const configFile = "api/config_private.yaml"
 
 var DBConf database
 var BianConf binance

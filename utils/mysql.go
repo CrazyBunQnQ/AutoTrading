@@ -1,4 +1,4 @@
-package util
+package utils
 
 import (
 	"AutoTrading/api"
@@ -9,10 +9,12 @@ import (
 var dbsource string
 
 func init() {
+	//dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@tcp(" + api.DBConf.Addr + ":" + api.DBConf.Port + ")/" + api.DBConf.Schema
 	dbsource = api.DBConf.UserName + ":" + api.DBConf.Password + "@/" + api.DBConf.Schema
 }
 
 func GetMySQL() *sql.DB {
+	//[username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
 	db, err := sql.Open("mysql", dbsource)
 	if err != nil {
 		panic(err.Error()) // Just for example purpose. You should use proper error handling instead of panic
