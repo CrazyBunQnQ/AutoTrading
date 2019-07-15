@@ -1,4 +1,4 @@
-package example
+package services
 
 import (
 	"AutoTrading/config"
@@ -25,7 +25,6 @@ func BianceDemo() {
 	ctx, _ := context.WithCancel(context.Background())
 	// use second return value for cancelling request
 	binanceService := binance.NewAPIService(
-		//"https://www.binance.com",
 		config.BianConf.BaseUrl,
 		config.BianConf.ApiKeyPublic,
 		hmacSigner,

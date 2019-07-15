@@ -4,8 +4,8 @@ import (
 	"AutoTrading/config"
 	"AutoTrading/models"
 	"AutoTrading/utils"
-	"encoding/json"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"strconv"
 )
 
@@ -28,10 +28,10 @@ func GetKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
 	mapParams["size"] = strconv.Itoa(nSize)
 
 	strRequestUrl := "/market/history/kline"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonKLineReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonKLineReturn), &kLineReturn)
+	jsoniter.Unmarshal([]byte(jsonKLineReturn), &kLineReturn)
 
 	return kLineReturn
 }
@@ -46,10 +46,10 @@ func GetTicker(strSymbol string) models.TickerReturn {
 	mapParams["symbol"] = strSymbol
 
 	strRequestUrl := "/market/detail/merged"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonTickReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTickReturn), &tickerReturn)
+	jsoniter.Unmarshal([]byte(jsonTickReturn), &tickerReturn)
 
 	return tickerReturn
 }
@@ -66,10 +66,10 @@ func GetMarketDepth(strSymbol, strType string) models.MarketDepthReturn {
 	mapParams["type"] = strType
 
 	strRequestUrl := "/market/depth"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonMarketDepthReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepthReturn)
+	jsoniter.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepthReturn)
 
 	return marketDepthReturn
 }
@@ -84,10 +84,10 @@ func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
 	mapParams["symbol"] = strSymbol
 
 	strRequestUrl := "/market/trade"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonTradeDetailReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeDetailReturn), &tradeDetailReturn)
+	jsoniter.Unmarshal([]byte(jsonTradeDetailReturn), &tradeDetailReturn)
 
 	return tradeDetailReturn
 }
@@ -104,10 +104,10 @@ func GetTrade(strSymbol string, nSize int) models.TradeReturn {
 	mapParams["size"] = strconv.Itoa(nSize)
 
 	strRequestUrl := "/market/history/trade"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+	jsoniter.UnmarshalFromString(jsonTradeReturn, &tradeReturn)
 
 	return tradeReturn
 }
@@ -122,10 +122,10 @@ func GetMarketDetail(strSymbol string) models.MarketDetailReturn {
 	mapParams["symbol"] = strSymbol
 
 	strRequestUrl := "/market/detail"
-	strUrl := config.MARKET_URL + strRequestUrl
+	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
 	jsonMarketDetailReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonMarketDetailReturn), &marketDetailReturn)
+	jsoniter.Unmarshal([]byte(jsonMarketDetailReturn), &marketDetailReturn)
 
 	return marketDetailReturn
 }
@@ -142,7 +142,7 @@ func GetSymbols() models.SymbolsReturn {
 	strUrl := config.TRADE_URL + strRequestUrl
 
 	jsonSymbolsReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonSymbolsReturn), &symbolsReturn)
+	jsoniter.Unmarshal([]byte(jsonSymbolsReturn), &symbolsReturn)
 
 	return symbolsReturn
 }
@@ -156,7 +156,7 @@ func GetCurrencys() models.CurrencysReturn {
 	strUrl := config.TRADE_URL + strRequestUrl
 
 	jsonCurrencysReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonCurrencysReturn), &currencysReturn)
+	jsoniter.Unmarshal([]byte(jsonCurrencysReturn), &currencysReturn)
 
 	return currencysReturn
 }
@@ -170,7 +170,7 @@ func GetTimestamp() models.TimestampReturn {
 	strUrl := config.TRADE_URL + strRequest
 
 	jsonTimestampReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonTimestampReturn), &timestampReturn)
+	jsoniter.Unmarshal([]byte(jsonTimestampReturn), &timestampReturn)
 
 	return timestampReturn
 }
@@ -185,7 +185,7 @@ func GetAccounts() models.AccountsReturn {
 
 	strRequest := "/v1/account/accounts"
 	jsonAccountsReturn := utils.ApiKeyGet(make(map[string]string), strRequest)
-	json.Unmarshal([]byte(jsonAccountsReturn), &accountsReturn)
+	jsoniter.Unmarshal([]byte(jsonAccountsReturn), &accountsReturn)
 
 	return accountsReturn
 }
@@ -198,7 +198,7 @@ func GetAccountBalance(strAccountID string) models.BalanceReturn {
 
 	strRequest := fmt.Sprintf("/v1/account/accounts/%s/balance", strAccountID)
 	jsonBanlanceReturn := utils.ApiKeyGet(make(map[string]string), strRequest)
-	json.Unmarshal([]byte(jsonBanlanceReturn), &balanceReturn)
+	jsoniter.Unmarshal([]byte(jsonBanlanceReturn), &balanceReturn)
 
 	return balanceReturn
 }
@@ -226,7 +226,7 @@ func Place(placeRequestParams models.PlaceRequestParams) models.PlaceReturn {
 
 	strRequest := "/v1/order/orders/place"
 	jsonPlaceReturn := utils.ApiKeyPost(mapParams, strRequest)
-	json.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
+	jsoniter.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
 
 	return placeReturn
 }
@@ -239,7 +239,7 @@ func SubmitCancel(strOrderID string) models.PlaceReturn {
 
 	strRequest := fmt.Sprintf("/v1/order/orders/%s/submitcancel", strOrderID)
 	jsonPlaceReturn := utils.ApiKeyPost(make(map[string]string), strRequest)
-	json.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
+	jsoniter.Unmarshal([]byte(jsonPlaceReturn), &placeReturn)
 
 	return placeReturn
 }

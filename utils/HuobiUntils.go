@@ -5,8 +5,8 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,6 +19,7 @@ import (
 // strUrl: 请求的URL
 // strParams: string类型的请求参数, user=lxz&pwd=lxz
 // return: 请求结果
+//func HttpGetRequest(strUrl string, mapParams map[string]string) string {
 func HttpGetRequest(strUrl string, mapParams map[string]string) string {
 	httpClient := &http.Client{}
 
@@ -35,7 +36,7 @@ func HttpGetRequest(strUrl string, mapParams map[string]string) string {
 	if nil != err {
 		return err.Error()
 	}
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36")
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
 
 	// 发出请求
 	response, err := httpClient.Do(request)
@@ -61,7 +62,7 @@ func HttpPostRequest(strUrl string, mapParams map[string]string) string {
 
 	jsonParams := ""
 	if nil != mapParams {
-		bytesParams, _ := json.Marshal(mapParams)
+		bytesParams, _ := jsoniter.Marshal(mapParams)
 		jsonParams = string(bytesParams)
 	}
 
@@ -69,7 +70,7 @@ func HttpPostRequest(strUrl string, mapParams map[string]string) string {
 	if nil != err {
 		return err.Error()
 	}
-	request.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36")
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Accept-Language", "zh-cn")
 
@@ -95,15 +96,15 @@ func ApiKeyGet(mapParams map[string]string, strRequestPath string) string {
 	strMethod := "GET"
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
-	mapParams["AccessKeyId"] = config.ACCESS_KEY
+	mapParams["AccessKeyId"] = config.HuoBiConf.AccessKeyPublic
 	mapParams["SignatureMethod"] = "HmacSHA256"
 	mapParams["SignatureVersion"] = "2"
 	mapParams["Timestamp"] = timestamp
 
-	hostName := config.HOST_NAME
-	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.SECRET_KEY)
+	hostName := config.HuoBiConf.HostName
+	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPublic)
 
-	if config.ENABLE_PRIVATE_SIGNATURE == true {
+	if config.HuoBiConf.EnablePrivateSignature == true {
 		privateSignature, err := CreatePrivateSignByJWT(mapParams["Signature"])
 		if nil == err {
 			mapParams["PrivateSignature"] = privateSignature
@@ -112,7 +113,7 @@ func ApiKeyGet(mapParams map[string]string, strRequestPath string) string {
 		}
 	}
 
-	strUrl := config.TRADE_URL + strRequestPath
+	strUrl := config.HuoBiConf.TradeUrl + strRequestPath
 
 	return HttpGetRequest(strUrl, MapValueEncodeURI(mapParams))
 }
@@ -126,16 +127,16 @@ func ApiKeyPost(mapParams map[string]string, strRequestPath string) string {
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
 	mapParams2Sign := make(map[string]string)
-	mapParams2Sign["AccessKeyId"] = config.ACCESS_KEY
+	mapParams2Sign["AccessKeyId"] = config.HuoBiConf.AccessKeyPublic
 	mapParams2Sign["SignatureMethod"] = "HmacSHA256"
 	mapParams2Sign["SignatureVersion"] = "2"
 	mapParams2Sign["Timestamp"] = timestamp
 
-	hostName := config.HOST_NAME
+	hostName := config.HuoBiConf.HostName
 
-	mapParams2Sign["Signature"] = CreateSign(mapParams2Sign, strMethod, hostName, strRequestPath, config.SECRET_KEY)
+	mapParams2Sign["Signature"] = CreateSign(mapParams2Sign, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPublic)
 
-	if config.ENABLE_PRIVATE_SIGNATURE == true {
+	if config.HuoBiConf.EnablePrivateSignature == true {
 		privateSignature, err := CreatePrivateSignByJWT(mapParams2Sign["Signature"])
 
 		if nil == err {
@@ -145,7 +146,7 @@ func ApiKeyPost(mapParams map[string]string, strRequestPath string) string {
 		}
 	}
 
-	strUrl := config.TRADE_URL + strRequestPath + "?" + Map2UrlQuery(MapValueEncodeURI(mapParams2Sign))
+	strUrl := config.HuoBiConf.TradeUrl + strRequestPath + "?" + Map2UrlQuery(MapValueEncodeURI(mapParams2Sign))
 
 	return HttpPostRequest(strUrl, mapParams)
 }
@@ -170,7 +171,7 @@ func CreateSign(mapParams map[string]string, strMethod, strHostUrl, strRequestPa
 }
 
 func CreatePrivateSignByJWT(sign string) (string, error) {
-	return SignByJWT(config.PRIVATE_KEY_PRIME_256, sign)
+	return SignByJWT(config.HuoBiConf.PrivateKeyPrime256, sign)
 }
 
 // 对Map按着ASCII码进行排序

@@ -41,7 +41,7 @@ type huobi struct {
 	SecretKeyPrivate       string `yaml:"secret_key_private"`
 	AccessKeyPublic        string `yaml:"access_key_public"`
 	SecretKeyPublic        string `yaml:"secret_key_public"`
-	EnablePrivateSignature string `yaml:"enable_private_signature"`
+	EnablePrivateSignature bool   `yaml:"enable_private_signature"`
 	PrivateKeyPrime256     string `yaml:"private_key_prime_256"`
 }
 
