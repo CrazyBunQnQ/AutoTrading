@@ -14,7 +14,7 @@ binance:
   secret_key_public: your order secret key
 
 huobi:
-  market_url: market_url
+  market_url: https://api.huobi.pro
   trade_url: trade_url
   host_name: host_name
 
