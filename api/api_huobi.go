@@ -9,16 +9,13 @@ import (
 	"strconv"
 )
 
-// 批量操作的API下个版本再封装
-
 //------------------------------------------------------------------------------------------
-// 交易API
+// Trade API
 
-// 获取K线数据
-// strSymbol: 交易对, btcusdt, bccbtc......
-// strPeriod: K线类型, 1min, 5min, 15min......
-// nSize: 获取数量, [1-2000]
-// return: KLineReturn 对象
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// strPeriod: KLine type, 1min, 5min, 15min......
+// nSize: Get quantity, [1-2000]
+// return: KLineReturn  Object
 func GetKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
 	kLineReturn := models.KLineReturn{}
 
@@ -36,9 +33,9 @@ func GetKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
 	return kLineReturn
 }
 
-// 获取聚合行情
-// strSymbol: 交易对, btcusdt, bccbtc......
-// return: TickReturn对象
+// Get aggregated quotes
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// return: TickReturn Object
 func GetTicker(strSymbol string) models.TickerReturn {
 	tickerReturn := models.TickerReturn{}
 
@@ -54,10 +51,10 @@ func GetTicker(strSymbol string) models.TickerReturn {
 	return tickerReturn
 }
 
-// 获取交易深度信息
-// strSymbol: 交易对, btcusdt, bccbtc......
-// strType: Depth类型, step0、step1......stpe5 (合并深度0-5, 0时不合并)
-// return: MarketDepthReturn对象
+// Get transaction depth information
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// strType: Depth type, step0、step1......stpe5 (Merge depth 0-5, 0 does not merge)
+// return: MarketDepthReturn Object
 func GetMarketDepth(strSymbol, strType string) models.MarketDepthReturn {
 	marketDepthReturn := models.MarketDepthReturn{}
 
@@ -74,9 +71,9 @@ func GetMarketDepth(strSymbol, strType string) models.MarketDepthReturn {
 	return marketDepthReturn
 }
 
-// 获取交易细节信息
-// strSymbol: 交易对, btcusdt, bccbtc......
-// return: TradeDetailReturn对象
+// Get transaction details
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// return: TradeDetailReturn Object
 func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
 	tradeDetailReturn := models.TradeDetailReturn{}
 
@@ -92,10 +89,10 @@ func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
 	return tradeDetailReturn
 }
 
-// 批量获取最近的交易记录
-// strSymbol: 交易对, btcusdt, bccbtc......
-// nSize: 获取交易记录的数量, 范围1-2000
-// return: TradeReturn对象
+// Get recent transaction history in bulk
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// nSize: Get the number of transaction records, range 1-2000
+// return: TradeReturn Object
 func GetTrade(strSymbol string, nSize int) models.TradeReturn {
 	tradeReturn := models.TradeReturn{}
 
@@ -112,9 +109,9 @@ func GetTrade(strSymbol string, nSize int) models.TradeReturn {
 	return tradeReturn
 }
 
-// 获取Market Detail 24小时成交量数据
-// strSymbol: 交易对, btcusdt, bccbtc......
-// return: MarketDetailReturn对象
+// Get Market Detail 24 hour volume data
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// return: MarketDetailReturn Object
 func GetMarketDetail(strSymbol string) models.MarketDetailReturn {
 	marketDetailReturn := models.MarketDetailReturn{}
 
@@ -131,15 +128,15 @@ func GetMarketDetail(strSymbol string) models.MarketDetailReturn {
 }
 
 //------------------------------------------------------------------------------------------
-// 公共API
+// Public API
 
-// 查询系统支持的所有交易及精度
-// return: SymbolsReturn对象
+// Query all transactions and precision supported by the system
+// return: SymbolsReturn Object
 func GetSymbols() models.SymbolsReturn {
 	symbolsReturn := models.SymbolsReturn{}
 
 	strRequestUrl := "/v1/common/symbols"
-	strUrl := config.TRADE_URL + strRequestUrl
+	strUrl := config.HuoBiConf.TradeUrl + strRequestUrl
 
 	jsonSymbolsReturn := utils.HttpGetRequest(strUrl, nil)
 	json.Unmarshal([]byte(jsonSymbolsReturn), &symbolsReturn)
@@ -147,13 +144,13 @@ func GetSymbols() models.SymbolsReturn {
 	return symbolsReturn
 }
 
-// 查询系统支持的所有币种
-// return: CurrencysReturn对象
+// Query all currencies supported by the system
+// return: CurrencysReturn Object
 func GetCurrencys() models.CurrencysReturn {
 	currencysReturn := models.CurrencysReturn{}
 
 	strRequestUrl := "/v1/common/currencys"
-	strUrl := config.TRADE_URL + strRequestUrl
+	strUrl := config.HuoBiConf.TradeUrl + strRequestUrl
 
 	jsonCurrencysReturn := utils.HttpGetRequest(strUrl, nil)
 	json.Unmarshal([]byte(jsonCurrencysReturn), &currencysReturn)
@@ -161,13 +158,13 @@ func GetCurrencys() models.CurrencysReturn {
 	return currencysReturn
 }
 
-// 查询系统当前时间戳
-// return: TimestampReturn对象
+// Query system current timestamp
+// return: TimestampReturn Object
 func GetTimestamp() models.TimestampReturn {
 	timestampReturn := models.TimestampReturn{}
 
 	strRequest := "/v1/common/timestamp"
-	strUrl := config.TRADE_URL + strRequest
+	strUrl := config.HuoBiConf.TradeUrl + strRequest
 
 	jsonTimestampReturn := utils.HttpGetRequest(strUrl, nil)
 	json.Unmarshal([]byte(jsonTimestampReturn), &timestampReturn)
@@ -176,10 +173,10 @@ func GetTimestamp() models.TimestampReturn {
 }
 
 //------------------------------------------------------------------------------------------
-// 用户资产API
+// User Assets API
 
-// 查询当前用户的所有账户, 根据包含的私钥查询
-// return: AccountsReturn对象
+// Query all accounts of the current user, query according to the included private key
+// return: AccountsReturn Object
 func GetAccounts() models.AccountsReturn {
 	accountsReturn := models.AccountsReturn{}
 
@@ -190,9 +187,9 @@ func GetAccounts() models.AccountsReturn {
 	return accountsReturn
 }
 
-// 根据账户ID查询账户余额
-// nAccountID: 账户ID, 不知道的话可以通过GetAccounts()获取, 可以只现货账户, C2C账户, 期货账户
-// return: BalanceReturn对象
+// Check account balance based on account ID
+// nAccountID: Account ID, if you don't know, you can get it by GetAccounts(), you can only have spot account, C2C account, futures account.
+// return: BalanceReturn Object
 func GetAccountBalance(strAccountID string) models.BalanceReturn {
 	balanceReturn := models.BalanceReturn{}
 
@@ -204,11 +201,11 @@ func GetAccountBalance(strAccountID string) models.BalanceReturn {
 }
 
 //------------------------------------------------------------------------------------------
-// 交易API
+// Transaction API
 
-// 下单
-// placeRequestParams: 下单信息
-// return: PlaceReturn对象
+// Order
+// placeRequestParams: Order information
+// return: PlaceReturn Object
 func Place(placeRequestParams models.PlaceRequestParams) models.PlaceReturn {
 	placeReturn := models.PlaceReturn{}
 
@@ -231,9 +228,9 @@ func Place(placeRequestParams models.PlaceRequestParams) models.PlaceReturn {
 	return placeReturn
 }
 
-// 申请撤销一个订单请求
-// strOrderID: 订单ID
-// return: PlaceReturn对象
+// Request to cancel an order request
+// strOrderID: Order ID
+// return: PlaceReturn Object
 func SubmitCancel(strOrderID string) models.PlaceReturn {
 	placeReturn := models.PlaceReturn{}
 
