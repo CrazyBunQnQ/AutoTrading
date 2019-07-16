@@ -22,3 +22,4 @@
 /Gopkg.lock
 /Gopkg.toml
 *_private.*
+/privatekey.pem
