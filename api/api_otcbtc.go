@@ -2,22 +2,21 @@ package api
 
 import (
 	"AutoTrading/config"
-	jsoniter "github.com/json-iterator/go"
 )
 
-func OtcbtcTrades(symbol string, limit string) jsoniter.Any {
+func OtcbtcTrades(symbol string, limit string) string {
 	return otcbtcApiJsonResult("/api/v2/trades?market=" + symbol + "&limit=" + limit)
 }
 
-func OtcbtcDepth(symbol string, limit string) jsoniter.Any {
+func OtcbtcDepth(symbol string, limit string) string {
 	return otcbtcApiJsonResult("/api/v2/depth?market=" + symbol + "&limit=" + limit)
 }
 
-func OtcbtcTickers(symbol string) jsoniter.Any {
+func OtcbtcTickers(symbol string) string {
 	return otcbtcApiJsonResult("/api/v2/tickers/" + symbol)
 }
 
-func otcbtcApiJsonResult(fullApi string) jsoniter.Any {
+func otcbtcApiJsonResult(fullApi string) string {
 	return httpGetJsonStr(fullOtcbtcApi(fullApi))
 }
 

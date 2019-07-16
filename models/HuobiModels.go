@@ -120,20 +120,20 @@ type MarketDetailReturn struct {
 	ErrMsg  string       `json:"err-msg"`
 }
 
-type MarketDepth struct {
+type HuobiDepth struct {
 	ID   int64       `json:"id"`   // 消息ID
 	Ts   int64       `json:"ts"`   // 消息声称事件, 单位: 毫秒
 	Bids [][]float64 `json:"bids"` // 买盘, [price(成交价), amount(成交量)], 按price降序排列
 	Asks [][]float64 `json:"asks"` // 卖盘, [price(成交价), amount(成交量)], 按price升序排列
 }
 
-type MarketDepthReturn struct {
-	Status  string      `json:"status"` // 请求状态, ok或者error
-	Ts      int64       `json:"ts"`     // 响应生成时间点, 单位: 毫秒
-	Tick    MarketDepth `json:"tick"`   // Depth数据
-	Ch      string      `json:"ch"`     //  数据所属的Channel, 格式: market.$symbol.depth.$type
-	ErrCode string      `json:"err-code"`
-	ErrMsg  string      `json:"err-msg"`
+type HuobiDepthReturn struct {
+	Status  string     `json:"status"` // 请求状态, ok或者error
+	Ts      int64      `json:"ts"`     // 响应生成时间点, 单位: 毫秒
+	Tick    HuobiDepth `json:"tick"`   // Depth数据
+	Ch      string     `json:"ch"`     //  数据所属的Channel, 格式: market.$symbol.depth.$type
+	ErrCode string     `json:"err-code"`
+	ErrMsg  string     `json:"err-msg"`
 }
 
 type KLineData struct {
@@ -170,7 +170,7 @@ type SubAccount struct {
 	Type     string `json:"type"`     // 类型, trade: 交易余额, frozen: 冻结余额
 }
 
-type Balance struct {
+type HuobiBalance struct {
 	ID     int64        `json:"id"`    // 账户ID
 	State  string       `json:"state"` // 账户状态, working: 正常, lock: 账户被锁定
 	Type   string       `json:"type"`  // 账户类型, spot: 现货账户
@@ -179,10 +179,10 @@ type Balance struct {
 }
 
 type BalanceReturn struct {
-	Status  string  `json:"status"` // 请求状态
-	Data    Balance `json:"data"`   // 账户余额
-	ErrCode string  `json:"err-code"`
-	ErrMsg  string  `json:"err-msg"`
+	Status  string       `json:"status"` // 请求状态
+	Data    HuobiBalance `json:"data"`   // 账户余额
+	ErrCode string       `json:"err-code"`
+	ErrMsg  string       `json:"err-msg"`
 }
 
 type AccountsData struct {

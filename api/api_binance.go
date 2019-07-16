@@ -2,22 +2,37 @@ package api
 
 import (
 	"AutoTrading/config"
-	jsoniter "github.com/json-iterator/go"
+	"AutoTrading/models"
+	"AutoTrading/utils"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
-func BianTrades(symbol string, limit string) jsoniter.Any {
+func BianTrades(symbol string, limit string) string {
 	return bianApiJsonResult("/api/v1/trades?symbol=" + symbol + "&limit=" + limit)
 }
 
-func BianDepth(symbol string, limit string) jsoniter.Any {
-	return bianApiJsonResult("/api/v1/depth?symbol=" + symbol + "&limit=" + limit)
+func BianDepth(strSymbol string, limit int) models.BianDepth {
+	marketDepth := models.BianDepth{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = strSymbol
+	mapParams["limit"] = strconv.Itoa(limit)
+
+	strRequestUrl := "/api/v1/depth"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonMarketDepthReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepth)
+
+	return marketDepth
 }
 
 // Exchange information
-func ExchangeInfo() jsoniter.Any {
+func ExchangeInfo() string {
 	return bianApiJsonResult("/api/v1/exchangeInfo")
 }
 
@@ -45,10 +60,12 @@ func Time() int64 {
 		log.Fatal(err)
 		return 0
 	}
-	return jsoniter.Get(body, "serverTime").ToInt64()
+	log.Println(string(body))
+	return 0
+	//return json.Get(body, "serverTime").ToInt64()
 }
 
-func bianApiJsonResult(fullApi string) jsoniter.Any {
+func bianApiJsonResult(fullApi string) string {
 	return httpGetJsonStr(fullBianApi(fullApi))
 }
 

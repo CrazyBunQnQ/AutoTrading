@@ -54,9 +54,9 @@ func GetTicker(strSymbol string) models.TickerReturn {
 // Get transaction depth information
 // strSymbol: Transaction pair, btcusdt, bccbtc......
 // strType: Depth type, step0、step1......stpe5 (Merge depth 0-5, 0 does not merge)
-// return: MarketDepthReturn Object
-func GetMarketDepth(strSymbol, strType string) models.MarketDepthReturn {
-	marketDepthReturn := models.MarketDepthReturn{}
+// return: HuobiDepthReturn Object
+func GetMarketDepth(strSymbol, strType string) models.HuobiDepthReturn {
+	marketDepthReturn := models.HuobiDepthReturn{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = strSymbol
