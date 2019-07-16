@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -62,7 +61,7 @@ func HttpPostRequest(strUrl string, mapParams map[string]string) string {
 
 	jsonParams := ""
 	if nil != mapParams {
-		bytesParams, _ := jsoniter.Marshal(mapParams)
+		bytesParams, _ := json.Marshal(mapParams)
 		jsonParams = string(bytesParams)
 	}
 
