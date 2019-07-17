@@ -16,7 +16,7 @@ import (
 // strPeriod: KLine type, 1min, 5min, 15min......
 // nSize: Get quantity, [1-2000]
 // return: KLineReturn  Object
-func GetKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
+func GetHuobiKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
 	kLineReturn := models.KLineReturn{}
 
 	mapParams := make(map[string]string)

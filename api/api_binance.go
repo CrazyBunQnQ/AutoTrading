@@ -11,8 +11,33 @@ import (
 	"strconv"
 )
 
-func BianTrades(symbol string, limit string) string {
-	return bianApiJsonResult("/api/v1/trades?symbol=" + symbol + "&limit=" + limit)
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// strPeriod: KLine type, 1min, 5min, 15min......
+// nSize: Get quantity, [1-2000]
+// return: KLineReturn  Object
+func GetBianKLine(symbol string, interval models.Interval, limit int, startTime, endTime int64) []interface{} {
+	var bianKLines []interface{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+	mapParams["interval"] = string(interval)
+	if limit != 0 {
+		mapParams["limit"] = strconv.Itoa(limit)
+	}
+	if startTime != 0 {
+		mapParams["startTime"] = strconv.FormatInt(startTime, 10)
+	}
+	if endTime != 0 {
+		mapParams["endTime"] = strconv.FormatInt(endTime, 10)
+	}
+
+	strRequestUrl := "/api/v1/klines"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonKLineReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonKLineReturn), &bianKLines)
+
+	return bianKLines
 }
 
 func BianDepth(strSymbol string, limit int) models.BianDepth {
@@ -29,6 +54,10 @@ func BianDepth(strSymbol string, limit int) models.BianDepth {
 	json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepth)
 
 	return marketDepth
+}
+
+func BianTrades(symbol string, limit string) string {
+	return bianApiJsonResult("/api/v1/trades?symbol=" + symbol + "&limit=" + limit)
 }
 
 // Exchange information

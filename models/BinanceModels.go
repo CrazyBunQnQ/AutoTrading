@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// OrderBook represents Bids and Asks.
 type BianDepth struct {
 	LastUpdateID int        `json:"lastUpdateId"`
 	Bids         [][]string `json:"bids"` // 买盘, [price(成交价), amount(成交量)], 按price降序排列
@@ -340,25 +341,25 @@ type UserDataWebsocketRequest struct {
 	ListenKey string
 }
 
-// Interval represents interval enum.
+// Binance Interval represents interval enum.
 type Interval string
 
 var (
-	Minute         = Interval("1m")
-	ThreeMinutes   = Interval("3m")
-	FiveMinutes    = Interval("5m")
-	FifteenMinutes = Interval("15m")
-	ThirtyMinutes  = Interval("30m")
-	Hour           = Interval("1h")
-	TwoHours       = Interval("2h")
-	FourHours      = Interval("4h")
-	SixHours       = Interval("6h")
-	EightHours     = Interval("8h")
-	TwelveHours    = Interval("12h")
-	Day            = Interval("1d")
-	ThreeDays      = Interval("3d")
-	Week           = Interval("1w")
-	Month          = Interval("1M")
+	BianMinute         = Interval("1m")
+	BianThreeMinutes   = Interval("3m")
+	BianFiveMinutes    = Interval("5m")
+	BianFifteenMinutes = Interval("15m")
+	BianThirtyMinutes  = Interval("30m")
+	BianHour           = Interval("1h")
+	BianTwoHours       = Interval("2h")
+	BianFourHours      = Interval("4h")
+	BianSixHours       = Interval("6h")
+	BianEightHours     = Interval("8h")
+	BianTwelveHours    = Interval("12h")
+	BianDay            = Interval("1d")
+	BianThreeDays      = Interval("3d")
+	BianWeek           = Interval("1w")
+	BianMonth          = Interval("1M")
 )
 
 // TimeInForce represents timeInForce enum.
