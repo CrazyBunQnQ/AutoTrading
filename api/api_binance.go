@@ -188,6 +188,35 @@ func BianLastAllPrice() []models.BianLastPrice {
 	return result
 }
 
+func BianBestTicker(symbol string) models.BianBestTicker {
+	result := models.BianBestTicker{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+
+	strRequestUrl := "/api/v3/ticker/bookTicker"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
+func BianAllBestTicker() []models.BianBestTicker {
+	result := []models.BianBestTicker{}
+
+	mapParams := make(map[string]string)
+
+	strRequestUrl := "/api/v3/ticker/bookTicker"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
 // ************************************************************
 
 // Exchange information

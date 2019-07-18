@@ -60,9 +60,19 @@ type BianTicker24 struct {
 	Count              int    `json:"count"`
 }
 
+// PriceTicker represents ticker data for price.
 type BianLastPrice struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
+}
+
+// BookTicker represents book ticker data.
+type BianBestTicker struct {
+	Symbol   string `json:"symbol"`
+	BidPrice string `json:"bidPrice"`
+	BidQty   string `json:"bidQty"`
+	AskPrice string `json:"askPrice"`
+	AskQty   string `json:"askQty"`
 }
 
 // **************************************
@@ -174,21 +184,6 @@ type Ticker24 struct {
 	FirstID            int
 	LastID             int
 	Count              int
-}
-
-// PriceTicker represents ticker data for price.
-type PriceTicker struct {
-	Symbol string
-	Price  float64
-}
-
-// BookTicker represents book ticker data.
-type BookTicker struct {
-	Symbol   string
-	BidPrice float64
-	BidQty   float64
-	AskPrice float64
-	AskQty   float64
 }
 
 // NewOrderRequest represents NewOrder request data.
