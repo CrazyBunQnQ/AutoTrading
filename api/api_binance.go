@@ -16,7 +16,7 @@ import (
 // nSize: Get quantity, [1-2000]
 // return: KLineReturn  Object
 func BianKLine(symbol string, interval models.Interval, limit int, startTime, endTime int64) []interface{} {
-	var bianKLines []interface{}
+	var result []interface{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
@@ -35,9 +35,9 @@ func BianKLine(symbol string, interval models.Interval, limit int, startTime, en
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &bianKLines)
+	json.Unmarshal([]byte(jsonReturn), &result)
 
-	return bianKLines
+	return result
 }
 
 // Get transaction depth information
@@ -45,7 +45,7 @@ func BianKLine(symbol string, interval models.Interval, limit int, startTime, en
 // limit: Depth type, Default 100; Maximum 1000. Optional values: [5, 10, 20, 50, 100, 500, 1000]
 // return: HuobiDepthReturn Object
 func BianDepth(symbol string, limit int) models.BianDepth {
-	marketDepth := models.BianDepth{}
+	result := models.BianDepth{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
@@ -57,9 +57,9 @@ func BianDepth(symbol string, limit int) models.BianDepth {
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &marketDepth)
+	json.Unmarshal([]byte(jsonReturn), &result)
 
-	return marketDepth
+	return result
 }
 
 // Get recent transaction history in bulk
@@ -67,7 +67,7 @@ func BianDepth(symbol string, limit int) models.BianDepth {
 // limit: Get the number of transaction records, Default 500; max 1000.
 // return: TradeReturn Object
 func BianTrade(symbol string, limit int) []models.BianTrade {
-	tradeReturn := []models.BianTrade{}
+	result := []models.BianTrade{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
@@ -79,9 +79,9 @@ func BianTrade(symbol string, limit int) []models.BianTrade {
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &tradeReturn)
+	json.Unmarshal([]byte(jsonReturn), &result)
 
-	return tradeReturn
+	return result
 }
 
 // Get recent transaction history in bulk
@@ -89,7 +89,7 @@ func BianTrade(symbol string, limit int) []models.BianTrade {
 // limit: Get the number of transaction records, Default 500; max 1000.
 // return: TradeReturn Object
 func BianAggTrade(symbol string, limit, fromId int, startTime, endTime int64) []models.BianAggTrade {
-	tradeReturn := []models.BianAggTrade{}
+	result := []models.BianAggTrade{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
@@ -110,13 +110,13 @@ func BianAggTrade(symbol string, limit, fromId int, startTime, endTime int64) []
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &tradeReturn)
+	json.Unmarshal([]byte(jsonReturn), &result)
 
-	return tradeReturn
+	return result
 }
 
 func BianAvgPrice(symbol string) models.BianAvgPrice {
-	avgPrice := models.BianAvgPrice{}
+	result := models.BianAvgPrice{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
@@ -125,10 +125,41 @@ func BianAvgPrice(symbol string) models.BianAvgPrice {
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &avgPrice)
+	json.Unmarshal([]byte(jsonReturn), &result)
 
-	return avgPrice
+	return result
 }
+
+func BianTicker24(symbol string) models.BianTicker24 {
+	result := models.BianTicker24{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+
+	strRequestUrl := "/api/v1/ticker/24hr"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
+func BianTicker24All() []models.BianTicker24 {
+	result := []models.BianTicker24{}
+
+	mapParams := make(map[string]string)
+
+	strRequestUrl := "/api/v1/ticker/24hr"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
+// ************************************************************
 
 // Exchange information
 func ExchangeInfo() string {

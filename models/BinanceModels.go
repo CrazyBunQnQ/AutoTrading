@@ -36,6 +36,30 @@ type BianAvgPrice struct {
 	Price string `json:"price"`
 }
 
+// Ticker24 represents data for 24hr ticker.
+type BianTicker24 struct {
+	Symbol             string `json:"symbol"`
+	PriceChange        string `json:"priceChange"`
+	PriceChangePercent string `json:"priceChangePercent"`
+	WeightedAvgPrice   string `json:"weightedAvgPrice"`
+	PrevClosePrice     string `json:"prevClosePrice"`
+	LastPrice          string `json:"lastPrice"`
+	LastQty            string `json:"lastQty"`
+	BidPrice           string `json:"bidPrice"`
+	BidQty             string `json:"bidQty"`
+	AskPrice           string `json:"askPrice"`
+	AskQty             string `json:"askQty"`
+	OpenPrice          string `json:"openPrice"`
+	HighPrice          string `json:"highPrice"`
+	LowPrice           string `json:"lowPrice"`
+	Volume             string `json:"volume"`
+	OpenTime           int64  `json:"openTime"`
+	CloseTime          int64  `json:"closeTime"`
+	FirstID            int    `json:"firstId"`
+	LastID             int    `json:"lastId"`
+	Count              int    `json:"count"`
+}
+
 // **************************************
 
 // OrderBook represents Bids and Asks.

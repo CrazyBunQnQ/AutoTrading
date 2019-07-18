@@ -18,4 +18,7 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.HuobiTrade("btcusdt", 5))
 
 	log.Println(api.BianAvgPrice("BTCUSDT"))
+
+	//log.Println(api.BianTicker24("BTCUSDT"))
+	//log.Println(api.BianTicker24All())
 }
