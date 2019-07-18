@@ -93,7 +93,7 @@ func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
 // strSymbol: Transaction pair, btcusdt, bccbtc......
 // nSize: Get the number of transaction records, range 1-2000
 // return: TradeReturn Object
-func GetTrade(strSymbol string, nSize int) models.TradeReturn {
+func HuobiTrade(strSymbol string, nSize int) models.TradeReturn {
 	tradeReturn := models.TradeReturn{}
 
 	mapParams := make(map[string]string)

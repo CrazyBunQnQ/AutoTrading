@@ -9,6 +9,20 @@ type BianDepth struct {
 	Asks         [][]string `json:"asks"` // 卖盘, [price(成交价), amount(成交量)], 按price升序排列
 }
 
+type BianTrades struct {
+	Trade []BianTrade
+}
+
+type BianTrade struct {
+	ID           int    `json:"id"`
+	Price        string `json:"price"`
+	Quantity     string `json:"qty"`
+	QuoteQty     string `json:"quoteQty"`
+	Timestamp    int64  `json:"time"`
+	IsBuyerMaker bool   `json:"isBuyerMaker"`
+	IsBestMatch  bool   `json:"isBestMatch"`
+}
+
 // OrderBook represents Bids and Asks.
 type OrderBook struct {
 	LastUpdateID int `json:"lastUpdateId"`

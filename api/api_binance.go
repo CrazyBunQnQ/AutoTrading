@@ -15,7 +15,7 @@ import (
 // strPeriod: KLine type, 1min, 5min, 15min......
 // nSize: Get quantity, [1-2000]
 // return: KLineReturn  Object
-func GetBianKLine(symbol string, interval models.Interval, limit int, startTime, endTime int64) []interface{} {
+func BianKLine(symbol string, interval models.Interval, limit int, startTime, endTime int64) []interface{} {
 	var bianKLines []interface{}
 
 	mapParams := make(map[string]string)
@@ -56,8 +56,24 @@ func BianDepth(strSymbol string, limit int) models.BianDepth {
 	return marketDepth
 }
 
-func BianTrades(symbol string, limit string) string {
-	return bianApiJsonResult("/api/v1/trades?symbol=" + symbol + "&limit=" + limit)
+// Get recent transaction history in bulk
+// strSymbol: Transaction pair, btcusdt, bccbtc......
+// nSize: Get the number of transaction records, range 1-2000
+// return: TradeReturn Object
+func BianTrade(symbol string, limit int) []models.BianTrade {
+	tradeReturn := []models.BianTrade{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+	mapParams["limit"] = strconv.Itoa(limit)
+
+	strRequestUrl := "/api/v1/trades"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+
+	return tradeReturn
 }
 
 // Exchange information

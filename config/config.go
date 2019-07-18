@@ -52,8 +52,9 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
-//const configFile = "../config/config_private.yaml"
-const configFile = "config/config_private.yaml"
+const configFile = "../config/config_private.yaml"
+
+//const configFile = "config/config_private.yaml"
 
 var DBConf database
 var BianConf binance
