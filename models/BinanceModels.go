@@ -31,6 +31,13 @@ type BianAggTrade struct {
 	IsBestMatch  bool   `json:"M"`
 }
 
+type BianAvgPrice struct {
+	Mins  int    `json:"mins"`
+	Price string `json:"price"`
+}
+
+// **************************************
+
 // OrderBook represents Bids and Asks.
 type OrderBook struct {
 	LastUpdateID int `json:"lastUpdateId"`

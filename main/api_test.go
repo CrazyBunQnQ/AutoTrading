@@ -13,7 +13,9 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianKLine("BTCUSDT", models.BianDay, 10, 0, 0))
 	//log.Println(api.GetHuobiKLine("btcusdt", "15min", 10))
 
-	log.Println(api.BianTrade("BTCUSDT", 5))
-	log.Println(api.BianAggTrade("BTCUSDT", 5, 0, 0, 0))
-	log.Println(api.HuobiTrade("btcusdt", 5))
+	//log.Println(api.BianTrade("BTCUSDT", 5))
+	//log.Println(api.BianAggTrade("BTCUSDT", 5, 0, 0, 0))
+	//log.Println(api.HuobiTrade("btcusdt", 5))
+
+	log.Println(api.BianAvgPrice("BTCUSDT"))
 }

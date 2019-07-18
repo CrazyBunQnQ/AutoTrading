@@ -34,8 +34,8 @@ func BianKLine(symbol string, interval models.Interval, limit int, startTime, en
 	strRequestUrl := "/api/v1/klines"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonKLineReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonKLineReturn), &bianKLines)
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &bianKLines)
 
 	return bianKLines
 }
@@ -56,8 +56,8 @@ func BianDepth(symbol string, limit int) models.BianDepth {
 	strRequestUrl := "/api/v1/depth"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonMarketDepthReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepth)
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &marketDepth)
 
 	return marketDepth
 }
@@ -78,8 +78,8 @@ func BianTrade(symbol string, limit int) []models.BianTrade {
 	strRequestUrl := "/api/v1/trades"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &tradeReturn)
 
 	return tradeReturn
 }
@@ -109,10 +109,25 @@ func BianAggTrade(symbol string, limit, fromId int, startTime, endTime int64) []
 	strRequestUrl := "/api/v1/aggTrades"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &tradeReturn)
 
 	return tradeReturn
+}
+
+func BianAvgPrice(symbol string) models.BianAvgPrice {
+	avgPrice := models.BianAvgPrice{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+
+	strRequestUrl := "/api/v3/avgPrice"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &avgPrice)
+
+	return avgPrice
 }
 
 // Exchange information
