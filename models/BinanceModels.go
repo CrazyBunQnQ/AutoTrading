@@ -9,10 +9,6 @@ type BianDepth struct {
 	Asks         [][]string `json:"asks"` // 卖盘, [price(成交价), amount(成交量)], 按price升序排列
 }
 
-type BianTrades struct {
-	Trade []BianTrade
-}
-
 type BianTrade struct {
 	ID           int    `json:"id"`
 	Price        string `json:"price"`
@@ -21,6 +17,18 @@ type BianTrade struct {
 	Timestamp    int64  `json:"time"`
 	IsBuyerMaker bool   `json:"isBuyerMaker"`
 	IsBestMatch  bool   `json:"isBestMatch"`
+}
+
+// AggTrade represents aggregated trade.
+type BianAggTrade struct {
+	ID           int    `json:"a"`
+	Price        string `json:"p"`
+	Quantity     string `json:"q"`
+	FirstTradeID int    `json:"f"`
+	LastTradeID  int    `json:"l"`
+	Timestamp    int64  `json:"T"`
+	IsBuyerMaker bool   `json:"m"`
+	IsBestMatch  bool   `json:"M"`
 }
 
 // OrderBook represents Bids and Asks.

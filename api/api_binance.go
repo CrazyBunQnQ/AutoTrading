@@ -40,12 +40,18 @@ func BianKLine(symbol string, interval models.Interval, limit int, startTime, en
 	return bianKLines
 }
 
-func BianDepth(strSymbol string, limit int) models.BianDepth {
+// Get transaction depth information
+// symbol: Transaction pair, btcusdt, bccbtc......
+// limit: Depth type, Default 100; Maximum 1000. Optional values: [5, 10, 20, 50, 100, 500, 1000]
+// return: HuobiDepthReturn Object
+func BianDepth(symbol string, limit int) models.BianDepth {
 	marketDepth := models.BianDepth{}
 
 	mapParams := make(map[string]string)
-	mapParams["symbol"] = strSymbol
-	mapParams["limit"] = strconv.Itoa(limit)
+	mapParams["symbol"] = symbol
+	if limit != 0 {
+		mapParams["limit"] = strconv.Itoa(limit)
+	}
 
 	strRequestUrl := "/api/v1/depth"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
@@ -57,17 +63,50 @@ func BianDepth(strSymbol string, limit int) models.BianDepth {
 }
 
 // Get recent transaction history in bulk
-// strSymbol: Transaction pair, btcusdt, bccbtc......
-// nSize: Get the number of transaction records, range 1-2000
+// symbol: Transaction pair, btcusdt, bccbtc......
+// limit: Get the number of transaction records, Default 500; max 1000.
 // return: TradeReturn Object
 func BianTrade(symbol string, limit int) []models.BianTrade {
 	tradeReturn := []models.BianTrade{}
 
 	mapParams := make(map[string]string)
 	mapParams["symbol"] = symbol
-	mapParams["limit"] = strconv.Itoa(limit)
+	if limit != 0 {
+		mapParams["limit"] = strconv.Itoa(limit)
+	}
 
 	strRequestUrl := "/api/v1/trades"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+
+	return tradeReturn
+}
+
+// Get recent transaction history in bulk
+// symbol: Transaction pair, btcusdt, bccbtc......
+// limit: Get the number of transaction records, Default 500; max 1000.
+// return: TradeReturn Object
+func BianAggTrade(symbol string, limit, fromId int, startTime, endTime int64) []models.BianAggTrade {
+	tradeReturn := []models.BianAggTrade{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+	if limit != 0 {
+		mapParams["limit"] = strconv.Itoa(limit)
+	}
+	if fromId != 0 {
+		mapParams["fromId"] = strconv.Itoa(fromId)
+	}
+	if startTime != 0 {
+		mapParams["startTime"] = strconv.FormatInt(startTime, 64)
+	}
+	if endTime != 0 {
+		mapParams["endTime"] = strconv.FormatInt(endTime, 64)
+	}
+
+	strRequestUrl := "/api/v1/aggTrades"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
