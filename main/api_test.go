@@ -7,6 +7,8 @@ import (
 )
 
 func TestDepth(t *testing.T) {
+	log.Println(api.BianLastPrice("BTCUSDT"))
+
 	//log.Println(api.BianDepth("BTCUSDT", 5))
 	//log.Println(api.HuobiDepth("btcusdt", "step0"))
 
@@ -21,4 +23,6 @@ func TestDepth(t *testing.T) {
 
 	//log.Println(api.BianTicker24("BTCUSDT"))
 	//log.Println(api.BianTicker24All())
+
+	//log.Println(api.BianLastAllPrice())
 }

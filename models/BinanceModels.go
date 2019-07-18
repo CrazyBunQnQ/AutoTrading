@@ -60,6 +60,11 @@ type BianTicker24 struct {
 	Count              int    `json:"count"`
 }
 
+type BianLastPrice struct {
+	Symbol string `json:"symbol"`
+	Price  string `json:"price"`
+}
+
 // **************************************
 
 // OrderBook represents Bids and Asks.
