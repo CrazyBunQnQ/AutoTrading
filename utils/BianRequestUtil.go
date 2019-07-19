@@ -2,6 +2,9 @@ package utils
 
 import (
 	"AutoTrading/config"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -19,11 +22,9 @@ func BianGetRequest(strUrl string, params map[string]string, sign bool) string {
 	for key, val := range params {
 		q.Add(key, val)
 	}
-
-	//hmacSigner := &models.HmacSigner{
-	//	Key: []byte(config.BianConf.SecretKeyPrivate),
-	//}
-	//q.Add("signature", hmacSigner.Sign([]byte(q.Encode())))
+	if sign {
+		q.Add("signature", BianSign([]byte(config.BianConf.SecretKeyPrivate), []byte(q.Encode())))
+	}
 
 	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
 	request.Header.Add("Content-Type", "application/json")
@@ -46,8 +47,11 @@ func BianGetRequest(strUrl string, params map[string]string, sign bool) string {
 	return string(body)
 }
 
-func BianSign() {
-
+// Sign signs provided payload and returns encoded string sum.
+func BianSign(keyByte, queryEncodeByte []byte) string {
+	mac := hmac.New(sha256.New, keyByte)
+	mac.Write(queryEncodeByte)
+	return hex.EncodeToString(mac.Sum(nil))
 }
 
 func UnixMillis(t time.Time) int64 {
