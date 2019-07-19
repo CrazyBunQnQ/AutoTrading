@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // ************************* public API **********************
@@ -245,6 +246,7 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	mapParams["timeInForce"] = string(timeInForce)
 	mapParams["quantity"] = strconv.FormatFloat(quantity, 'f', -1, 64)
 	mapParams["price"] = strconv.FormatFloat(price, 'f', -1, 64)
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
 	if icebergQty != 0 {
 		mapParams["icebergQty"] = strconv.FormatFloat(icebergQty, 'f', -1, 64)
 	}
@@ -252,7 +254,7 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	strRequestUrl := "/api/v3/order"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpPostRequest(strUrl, mapParams)
+	jsonReturn := utils.BianGetRequest(strUrl, mapParams, true)
 	json.Unmarshal([]byte(jsonReturn), &result)
 
 	return result

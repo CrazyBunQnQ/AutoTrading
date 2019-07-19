@@ -20,9 +20,11 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianKLine("BTCUSDT", models.BianDay, 10, 0, 0))
 	//log.Println(api.GetHuobiKLine("btcusdt", "15min", 10))
 
-	//log.Println(api.BianTrade("BTCUSDT", 5))
+	//curBianPrice := api.BianTrade("BTCUSDT", 1)[0].Price
+	//log.Println("当前币安的 BTC 价格为: $" + curBianPrice)
 	//log.Println(api.BianAggTrade("BTCUSDT", 5, 0, 0, 0))
-	//log.Println(api.HuobiTrade("btcusdt", 5))
+	//curHuobiPrice := api.HuobiTrade("btcusdt", 1).Data[0].Data[0].Price
+	//log.Println("当前火币的 BTC 价格为: $" + strconv.FormatFloat(curHuobiPrice, 'f', -1, 64))
 
 	//log.Println(api.BianAvgPrice("BTCUSDT"))
 
@@ -30,6 +32,6 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianTicker24All())
 
 	// ************************* Account Test ***********************
-	log.Println(api.BianOrderByLimit("xrpusdt", models.SideSell, models.GTC, 50, 0.4, 0))
+	log.Println(api.BianOrderByLimit("XRPUSDT", models.SideSell, models.GTC, 50, 0.4, 0))
 
 }
