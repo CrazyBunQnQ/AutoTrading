@@ -2,16 +2,17 @@ package main
 
 import (
 	"AutoTrading/api"
+	"AutoTrading/models"
 	"log"
 	"testing"
 )
 
 func TestDepth(t *testing.T) {
-	log.Println(api.BianLastPrice("BTCUSDT"))
+	//log.Println(api.BianLastPrice("BTCUSDT"))
 	//log.Println(api.BianLastAllPrice())
 
-	log.Println(api.BianBestTicker("BTCUSDT"))
-	log.Println(api.BianAllBestTicker())
+	//log.Println(api.BianBestTicker("XRPUSDT"))
+	//log.Println(api.BianAllBestTicker())
 
 	//log.Println(api.BianDepth("BTCUSDT", 5))
 	//log.Println(api.HuobiDepth("btcusdt", "step0"))
@@ -23,9 +24,12 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianAggTrade("BTCUSDT", 5, 0, 0, 0))
 	//log.Println(api.HuobiTrade("btcusdt", 5))
 
-	log.Println(api.BianAvgPrice("BTCUSDT"))
+	//log.Println(api.BianAvgPrice("BTCUSDT"))
 
 	//log.Println(api.BianTicker24("BTCUSDT"))
 	//log.Println(api.BianTicker24All())
+
+	// ************************* Account Test ***********************
+	log.Println(api.BianOrderByLimit("xrpusdt", models.SideSell, models.GTC, 50, 0.4, 0))
 
 }

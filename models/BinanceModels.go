@@ -75,6 +75,81 @@ type BianBestTicker struct {
 	AskQty   string `json:"askQty"`
 }
 
+// ProcessedOrder represents data from processed order.
+type BianFastestOrder struct {
+	Symbol        string `json:"symbol"`
+	OrderID       int64  `json:"orderId"`
+	ClientOrderID string `json:"clientOrderId"`
+	TransactTime  int64  `json:"transactTime"`
+}
+
+// **************** Enum *****************
+
+// Binance BianInterval represents interval enum.
+type BianInterval string
+
+var (
+	BianMinute         = BianInterval("1m")
+	BianThreeMinutes   = BianInterval("3m")
+	BianFiveMinutes    = BianInterval("5m")
+	BianFifteenMinutes = BianInterval("15m")
+	BianThirtyMinutes  = BianInterval("30m")
+	BianHour           = BianInterval("1h")
+	BianTwoHours       = BianInterval("2h")
+	BianFourHours      = BianInterval("4h")
+	BianSixHours       = BianInterval("6h")
+	BianEightHours     = BianInterval("8h")
+	BianTwelveHours    = BianInterval("12h")
+	BianDay            = BianInterval("1d")
+	BianThreeDays      = BianInterval("3d")
+	BianWeek           = BianInterval("1w")
+	BianMonth          = BianInterval("1M")
+)
+
+// BianTimeInForce represents timeInForce enum.
+type BianTimeInForce string
+
+var (
+	GTC = BianTimeInForce("GTC")
+	IOC = BianTimeInForce("IOC")
+)
+
+// OrderStatus represents order status enum.
+type OrderStatus string
+
+// BianOrderType represents order type enum.
+type BianOrderType string
+
+// OrderSide represents order side enum.
+type BianOrderSide string
+
+type BianOrderResponType string
+
+var (
+	StatusNew             = OrderStatus("NEW")
+	StatusPartiallyFilled = OrderStatus("PARTIALLY_FILLED")
+	StatusFilled          = OrderStatus("FILLED")
+	StatusCancelled       = OrderStatus("CANCELED")
+	StatusPendingCancel   = OrderStatus("PENDING_CANCEL")
+	StatusRejected        = OrderStatus("REJECTED")
+	StatusExpired         = OrderStatus("EXPIRED")
+
+	TypeLimit       = BianOrderType("LIMIT")
+	TypeMarket      = BianOrderType("MARKET")
+	StopLoss        = BianOrderType("STOP_LOSS")
+	StopLossLimit   = BianOrderType("STOP_LOSS_LIMIT")
+	TakeProfit      = BianOrderType("TAKE_PROFIT")
+	TakeProfitLimit = BianOrderType("TAKE_PROFIT_LIMIT")
+	LimitMaker      = BianOrderType("LIMIT_MAKER")
+
+	SideBuy  = BianOrderSide("BUY")
+	SideSell = BianOrderSide("SELL")
+
+	AckResponse    = BianOrderResponType("ACK")
+	ResultResponse = BianOrderResponType("RESULT")
+	FullResponse   = BianOrderResponType("FULL")
+)
+
 // **************************************
 
 // OrderBook represents Bids and Asks.
@@ -131,7 +206,7 @@ type AggTradesRequest struct {
 // KlinesRequest represents Klines request data.
 type KlinesRequest struct {
 	Symbol    string
-	Interval  Interval
+	Interval  BianInterval
 	Limit     int
 	StartTime int64
 	EndTime   int64
@@ -154,7 +229,7 @@ type Kline struct {
 
 type KlineEvent struct {
 	WSEvent
-	Interval     Interval
+	Interval     BianInterval
 	FirstTradeID int64
 	LastTradeID  int64
 	Final        bool
@@ -189,23 +264,15 @@ type Ticker24 struct {
 // NewOrderRequest represents NewOrder request data.
 type NewOrderRequest struct {
 	Symbol           string
-	Side             OrderSide
-	Type             OrderType
-	TimeInForce      TimeInForce
+	Side             BianOrderSide
+	Type             BianOrderType
+	TimeInForce      BianTimeInForce
 	Quantity         float64
 	Price            float64
 	NewClientOrderID string
 	StopPrice        float64
 	IcebergQty       float64
 	Timestamp        time.Time
-}
-
-// ProcessedOrder represents data from processed order.
-type ProcessedOrder struct {
-	Symbol        string
-	OrderID       int64
-	ClientOrderID string
-	TransactTime  time.Time
 }
 
 // QueryOrderRequest represents QueryOrder request data.
@@ -226,9 +293,9 @@ type ExecutedOrder struct {
 	OrigQty       float64
 	ExecutedQty   float64
 	Status        OrderStatus
-	TimeInForce   TimeInForce
-	Type          OrderType
-	Side          OrderSide
+	TimeInForce   BianTimeInForce
+	Type          BianOrderType
+	Side          BianOrderSide
 	StopPrice     float64
 	IcebergQty    float64
 	Time          time.Time
@@ -383,7 +450,7 @@ type DepthWebsocketRequest struct {
 
 type KlineWebsocketRequest struct {
 	Symbol   string
-	Interval Interval
+	Interval BianInterval
 }
 
 type TradeWebsocketRequest struct {
@@ -393,57 +460,3 @@ type TradeWebsocketRequest struct {
 type UserDataWebsocketRequest struct {
 	ListenKey string
 }
-
-// Binance Interval represents interval enum.
-type Interval string
-
-var (
-	BianMinute         = Interval("1m")
-	BianThreeMinutes   = Interval("3m")
-	BianFiveMinutes    = Interval("5m")
-	BianFifteenMinutes = Interval("15m")
-	BianThirtyMinutes  = Interval("30m")
-	BianHour           = Interval("1h")
-	BianTwoHours       = Interval("2h")
-	BianFourHours      = Interval("4h")
-	BianSixHours       = Interval("6h")
-	BianEightHours     = Interval("8h")
-	BianTwelveHours    = Interval("12h")
-	BianDay            = Interval("1d")
-	BianThreeDays      = Interval("3d")
-	BianWeek           = Interval("1w")
-	BianMonth          = Interval("1M")
-)
-
-// TimeInForce represents timeInForce enum.
-type TimeInForce string
-
-var (
-	GTC = TimeInForce("GTC")
-	IOC = TimeInForce("IOC")
-)
-
-// OrderStatus represents order status enum.
-type OrderStatus string
-
-// OrderType represents order type enum.
-type OrderType string
-
-// OrderSide represents order side enum.
-type OrderSide string
-
-var (
-	StatusNew             = OrderStatus("NEW")
-	StatusPartiallyFilled = OrderStatus("PARTIALLY_FILLED")
-	StatusFilled          = OrderStatus("FILLED")
-	StatusCancelled       = OrderStatus("CANCELED")
-	StatusPendingCancel   = OrderStatus("PENDING_CANCEL")
-	StatusRejected        = OrderStatus("REJECTED")
-	StatusExpired         = OrderStatus("EXPIRED")
-
-	TypeLimit  = OrderType("LIMIT")
-	TypeMarket = OrderType("MARKET")
-
-	SideBuy  = OrderSide("BUY")
-	SideSell = OrderSide("SELL")
-)

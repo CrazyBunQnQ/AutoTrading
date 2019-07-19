@@ -11,11 +11,25 @@ import (
 	"strconv"
 )
 
+// ************************* public API **********************
+
 // strSymbol: Transaction pair, btcusdt, bccbtc......
 // strPeriod: KLine type, 1min, 5min, 15min......
 // nSize: Get quantity, [1-2000]
 // return: KLineReturn  Object
-func BianKLine(symbol string, interval models.Interval, limit int, startTime, endTime int64) []interface{} {
+// Opening time
+// Opening price
+// Highest price
+// Lowest price
+// Closing price (the current price is not the current K line)
+// Volume
+// Closing time
+// Turnover
+// Number of transactions
+// Active buying volume
+// Active buying turnover
+// Please ignore this parameter
+func BianKLine(symbol string, interval models.BianInterval, limit int, startTime, endTime int64) []interface{} {
 	var result []interface{}
 
 	mapParams := make(map[string]string)
@@ -212,6 +226,33 @@ func BianAllBestTicker() []models.BianBestTicker {
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
+// ************************* Account API **********************
+// Create a limit order
+func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce models.BianTimeInForce, quantity, price, icebergQty float64) models.BianFastestOrder {
+	result := models.BianFastestOrder{}
+
+	mapParams := make(map[string]string)
+	mapParams["type"] = string(models.TypeLimit)
+	// fastest response type
+	mapParams["newOrderRespType"] = string(models.AckResponse)
+	mapParams["symbol"] = symbol
+	mapParams["side"] = string(side)
+	mapParams["timeInForce"] = string(timeInForce)
+	mapParams["quantity"] = strconv.FormatFloat(quantity, 'f', -1, 64)
+	mapParams["price"] = strconv.FormatFloat(price, 'f', -1, 64)
+	if icebergQty != 0 {
+		mapParams["icebergQty"] = strconv.FormatFloat(icebergQty, 'f', -1, 64)
+	}
+
+	strRequestUrl := "/api/v3/order"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn := utils.HttpPostRequest(strUrl, mapParams)
 	json.Unmarshal([]byte(jsonReturn), &result)
 
 	return result
