@@ -83,10 +83,44 @@ type BianFastestOrder struct {
 	TransactTime  int64  `json:"transactTime"`
 }
 
+// ExecutedOrder represents data about executed order.
+type BianOrderStatus struct {
+	Symbol              string          `json:"symbol"`
+	OrderID             int             `json:"orderId"`
+	ClientOrderID       string          `json:"clientOrderId"`
+	Price               string          `json:"price"`
+	OrigQty             string          `json:"origQty"`
+	ExecutedQty         string          `json:"executedQty"`
+	CummulativeQuoteQty string          `json:"cummulativeQuoteQty"`
+	Status              OrderStatus     `json:"status"`
+	TimeInForce         BianTimeInForce `json:"timeInForce"`
+	Type                BianOrderType   `json:"type"`
+	Side                BianOrderSide   `json:"side"`
+	StopPrice           string          `json:"stopPrice"`
+	IcebergQty          string          `json:"icebergQty"`
+	Time                int64           `json:"time"`
+	UpdateTime          int64           `json:"updateTime"`
+	IsWorking           bool            `json:"isWorking"`
+}
+
 // **************** Enum *****************
 
 // Binance BianInterval represents interval enum.
 type BianInterval string
+
+// OrderStatus represents order status enum.
+type OrderStatus string
+
+// BianOrderType represents order type enum.
+type BianOrderType string
+
+// OrderSide represents order side enum.
+type BianOrderSide string
+
+type BianOrderResponType string
+
+// BianTimeInForce represents timeInForce enum.
+type BianTimeInForce string
 
 var (
 	BianMinute         = BianInterval("1m")
@@ -104,28 +138,7 @@ var (
 	BianThreeDays      = BianInterval("3d")
 	BianWeek           = BianInterval("1w")
 	BianMonth          = BianInterval("1M")
-)
 
-// BianTimeInForce represents timeInForce enum.
-type BianTimeInForce string
-
-var (
-	GTC = BianTimeInForce("GTC")
-	IOC = BianTimeInForce("IOC")
-)
-
-// OrderStatus represents order status enum.
-type OrderStatus string
-
-// BianOrderType represents order type enum.
-type BianOrderType string
-
-// OrderSide represents order side enum.
-type BianOrderSide string
-
-type BianOrderResponType string
-
-var (
 	StatusNew             = OrderStatus("NEW")
 	StatusPartiallyFilled = OrderStatus("PARTIALLY_FILLED")
 	StatusFilled          = OrderStatus("FILLED")
@@ -148,6 +161,9 @@ var (
 	AckResponse    = BianOrderResponType("ACK")
 	ResultResponse = BianOrderResponType("RESULT")
 	FullResponse   = BianOrderResponType("FULL")
+
+	GTC = BianTimeInForce("GTC")
+	IOC = BianTimeInForce("IOC")
 )
 
 // **************************************
@@ -282,23 +298,6 @@ type QueryOrderRequest struct {
 	OrigClientOrderID string
 	RecvWindow        time.Duration
 	Timestamp         time.Time
-}
-
-// ExecutedOrder represents data about executed order.
-type ExecutedOrder struct {
-	Symbol        string
-	OrderID       int
-	ClientOrderID string
-	Price         float64
-	OrigQty       float64
-	ExecutedQty   float64
-	Status        OrderStatus
-	TimeInForce   BianTimeInForce
-	Type          BianOrderType
-	Side          BianOrderSide
-	StopPrice     float64
-	IcebergQty    float64
-	Time          time.Time
 }
 
 // CancelOrderRequest represents CancelOrder request data.

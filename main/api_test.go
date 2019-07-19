@@ -2,7 +2,6 @@ package main
 
 import (
 	"AutoTrading/api"
-	"AutoTrading/models"
 	"log"
 	"testing"
 )
@@ -32,6 +31,9 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianTicker24All())
 
 	// ************************* Account Test ***********************
-	log.Println(api.BianOrderByLimit("XRPUSDT", models.SideSell, models.GTC, 50, 0.4, 0))
+
+	// orderid: 207779114
+	//log.Println(api.BianOrderByLimit("XRPUSDT", models.SideSell, models.GTC, 50, 0.4, 0))
+	log.Println(api.BianOrderQuery("XRPUSDT", "", 207779114))
 
 }

@@ -254,6 +254,28 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	strRequestUrl := "/api/v3/order"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
+	jsonReturn := utils.BianPostRequest(strUrl, mapParams, true)
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
+func BianOrderQuery(symbol, origClientOrderId string, orderId int64) models.BianOrderStatus {
+	result := models.BianOrderStatus{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+	if origClientOrderId != "" {
+		mapParams["origClientOrderId"] = origClientOrderId
+	}
+	if orderId != 0 {
+		mapParams["orderId"] = strconv.FormatInt(orderId, 10)
+	}
+
+	strRequestUrl := "/api/v3/order"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
 	jsonReturn := utils.BianGetRequest(strUrl, mapParams, true)
 	json.Unmarshal([]byte(jsonReturn), &result)
 
