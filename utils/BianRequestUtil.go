@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func BianGetRequest(strUrl string, params map[string]string, sign bool) string {
+func BianGetRequest(strUrl string, params map[string]string, sign bool) (string, string) {
 	httpClient := &http.Client{}
 
 	request, err := http.NewRequest("GET", strUrl, nil)
 	if nil != err {
-		return err.Error()
+		return "", "创建请求失败: " + err.Error()
 	}
 
 	q := request.URL.Query()
@@ -34,17 +34,17 @@ func BianGetRequest(strUrl string, params map[string]string, sign bool) string {
 	request.URL.RawQuery = q.Encode()
 
 	response, err := httpClient.Do(request)
-	defer response.Body.Close()
 	if nil != err {
-		return err.Error()
+		return "", "请求失败: " + err.Error()
 	}
+	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if nil != err {
-		return err.Error()
+		return "", "读取相应内容失败: " + err.Error()
 	}
 
-	return string(body)
+	return string(body), ""
 }
 
 func BianPostRequest(strUrl string, params map[string]string, sign bool) string {

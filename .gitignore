@@ -24,4 +24,5 @@
 *_private.*
 /privatekey.pem
 !/main/api_test.go
+!/out/Dockerfile
 /out/

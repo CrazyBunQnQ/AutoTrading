@@ -20,5 +20,13 @@ func main() {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, api.BianOrderQuery("XRPUSDT", "", 207779114).Price)
+	io.WriteString(w, "hello world\n")
+	var status = api.BianOrderQuery("XRPUSDT", "", 207779114)
+	if status.Price != "" {
+		io.WriteString(w, status.Price)
+	} else if status.Err != "" {
+		io.WriteString(w, status.Err)
+	} else {
+		io.WriteString(w, "无返回")
+	}
 }

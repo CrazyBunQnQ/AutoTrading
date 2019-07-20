@@ -276,8 +276,13 @@ func BianOrderQuery(symbol, origClientOrderId string, orderId int64) models.Bian
 	strRequestUrl := "/api/v3/order"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.BianGetRequest(strUrl, mapParams, true)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.BianGetRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
