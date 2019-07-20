@@ -2,7 +2,6 @@ package config
 
 import (
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -52,9 +51,7 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
-const configFile = "../config/config_private.yaml"
-
-//const configFile = "config/config_private.yaml"
+const configFile = "resources/config_private.yaml"
 
 var DBConf database
 var BianConf binance
@@ -63,7 +60,8 @@ var OkexConf okex
 var OtcbtcConf otcbtc
 
 func init() {
-	yamlFile, _ := ioutil.ReadFile(configFile)
+	yamlFile, _ := Asset(configFile)
+
 	if yamlFile == nil {
 		log.Println("未找到配置文件 " + configFile)
 		os.Exit(1)
