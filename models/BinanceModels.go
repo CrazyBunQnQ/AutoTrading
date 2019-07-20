@@ -101,6 +101,7 @@ type BianOrderStatus struct {
 	Time                int64           `json:"time"`
 	UpdateTime          int64           `json:"updateTime"`
 	IsWorking           bool            `json:"isWorking"`
+	Err                 string          `json:"err"`
 }
 
 // **************** Enum *****************
