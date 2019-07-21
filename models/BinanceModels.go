@@ -7,6 +7,7 @@ type BianDepth struct {
 	LastUpdateID int        `json:"lastUpdateId"`
 	Bids         [][]string `json:"bids"` // 买盘, [price(成交价), amount(成交量)], 按price降序排列
 	Asks         [][]string `json:"asks"` // 卖盘, [price(成交价), amount(成交量)], 按price升序排列
+	Err          string     `json:"err"`
 }
 
 type BianTrade struct {
@@ -17,6 +18,7 @@ type BianTrade struct {
 	Timestamp    int64  `json:"time"`
 	IsBuyerMaker bool   `json:"isBuyerMaker"`
 	IsBestMatch  bool   `json:"isBestMatch"`
+	Err          string `json:"err"`
 }
 
 // AggTrade represents aggregated trade.
@@ -29,11 +31,13 @@ type BianAggTrade struct {
 	Timestamp    int64  `json:"T"`
 	IsBuyerMaker bool   `json:"m"`
 	IsBestMatch  bool   `json:"M"`
+	Err          string `json:"err"`
 }
 
 type BianAvgPrice struct {
 	Mins  int    `json:"mins"`
 	Price string `json:"price"`
+	Err   string `json:"err"`
 }
 
 // Ticker24 represents data for 24hr ticker.
@@ -58,12 +62,14 @@ type BianTicker24 struct {
 	FirstID            int    `json:"firstId"`
 	LastID             int    `json:"lastId"`
 	Count              int    `json:"count"`
+	Err                string `json:"err"`
 }
 
 // PriceTicker represents ticker data for price.
 type BianLastPrice struct {
 	Symbol string `json:"symbol"`
 	Price  string `json:"price"`
+	Err    string `json:"err"`
 }
 
 // BookTicker represents book ticker data.
@@ -73,6 +79,7 @@ type BianBestTicker struct {
 	BidQty   string `json:"bidQty"`
 	AskPrice string `json:"askPrice"`
 	AskQty   string `json:"askQty"`
+	Err      string `json:"err"`
 }
 
 // ProcessedOrder represents data from processed order.
@@ -81,6 +88,7 @@ type BianFastestOrder struct {
 	OrderID       int64  `json:"orderId"`
 	ClientOrderID string `json:"clientOrderId"`
 	TransactTime  int64  `json:"transactTime"`
+	Err           string `json:"err"`
 }
 
 // ExecutedOrder represents data about executed order.

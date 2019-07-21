@@ -27,8 +27,13 @@ func GetHuobiKLine(strSymbol, strPeriod string, nSize int) models.KLineReturn {
 	strRequestUrl := "/market/history/kline"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonKLineReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonKLineReturn), &kLineReturn)
+	jsonKLineReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &kLineReturn)
+	} else {
+		json.Unmarshal([]byte(jsonKLineReturn), &kLineReturn)
+	}
 
 	return kLineReturn
 }
@@ -45,8 +50,13 @@ func GetTicker(strSymbol string) models.TickerReturn {
 	strRequestUrl := "/market/detail/merged"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonTickReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTickReturn), &tickerReturn)
+	jsonTickReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &tickerReturn)
+	} else {
+		json.Unmarshal([]byte(jsonTickReturn), &tickerReturn)
+	}
 
 	return tickerReturn
 }
@@ -65,8 +75,13 @@ func HuobiDepth(strSymbol, strType string) models.HuobiDepthReturn {
 	strRequestUrl := "/market/depth"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonMarketDepthReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepthReturn)
+	jsonMarketDepthReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &marketDepthReturn)
+	} else {
+		json.Unmarshal([]byte(jsonMarketDepthReturn), &marketDepthReturn)
+	}
 
 	return marketDepthReturn
 }
@@ -83,8 +98,13 @@ func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
 	strRequestUrl := "/market/trade"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonTradeDetailReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeDetailReturn), &tradeDetailReturn)
+	jsonTradeDetailReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &tradeDetailReturn)
+	} else {
+		json.Unmarshal([]byte(jsonTradeDetailReturn), &tradeDetailReturn)
+	}
 
 	return tradeDetailReturn
 }
@@ -103,8 +123,13 @@ func HuobiTrade(strSymbol string, nSize int) models.TradeReturn {
 	strRequestUrl := "/market/history/trade"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonTradeReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+	jsonTradeReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &tradeReturn)
+	} else {
+		json.Unmarshal([]byte(jsonTradeReturn), &tradeReturn)
+	}
 
 	return tradeReturn
 }
@@ -121,8 +146,13 @@ func GetMarketDetail(strSymbol string) models.MarketDetailReturn {
 	strRequestUrl := "/market/detail"
 	strUrl := config.HuoBiConf.MarketUrl + strRequestUrl
 
-	jsonMarketDetailReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonMarketDetailReturn), &marketDetailReturn)
+	jsonMarketDetailReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &marketDetailReturn)
+	} else {
+		json.Unmarshal([]byte(jsonMarketDetailReturn), &marketDetailReturn)
+	}
 
 	return marketDetailReturn
 }
@@ -138,8 +168,13 @@ func GetSymbols() models.SymbolsReturn {
 	strRequestUrl := "/v1/common/symbols"
 	strUrl := config.HuoBiConf.TradeUrl + strRequestUrl
 
-	jsonSymbolsReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonSymbolsReturn), &symbolsReturn)
+	jsonSymbolsReturn, err := utils.HttpGetRequest(strUrl, nil)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &symbolsReturn)
+	} else {
+		json.Unmarshal([]byte(jsonSymbolsReturn), &symbolsReturn)
+	}
 
 	return symbolsReturn
 }
@@ -152,8 +187,13 @@ func GetCurrencys() models.CurrencysReturn {
 	strRequestUrl := "/v1/common/currencys"
 	strUrl := config.HuoBiConf.TradeUrl + strRequestUrl
 
-	jsonCurrencysReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonCurrencysReturn), &currencysReturn)
+	jsonCurrencysReturn, err := utils.HttpGetRequest(strUrl, nil)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &currencysReturn)
+	} else {
+		json.Unmarshal([]byte(jsonCurrencysReturn), &currencysReturn)
+	}
 
 	return currencysReturn
 }
@@ -166,8 +206,13 @@ func GetTimestamp() models.TimestampReturn {
 	strRequest := "/v1/common/timestamp"
 	strUrl := config.HuoBiConf.TradeUrl + strRequest
 
-	jsonTimestampReturn := utils.HttpGetRequest(strUrl, nil)
-	json.Unmarshal([]byte(jsonTimestampReturn), &timestampReturn)
+	jsonTimestampReturn, err := utils.HttpGetRequest(strUrl, nil)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &timestampReturn)
+	} else {
+		json.Unmarshal([]byte(jsonTimestampReturn), &timestampReturn)
+	}
 
 	return timestampReturn
 }
@@ -181,8 +226,13 @@ func GetAccounts() models.AccountsReturn {
 	accountsReturn := models.AccountsReturn{}
 
 	strRequest := "/v1/account/accounts"
-	jsonAccountsReturn := utils.ApiKeyGet(make(map[string]string), strRequest)
-	json.Unmarshal([]byte(jsonAccountsReturn), &accountsReturn)
+	jsonAccountsReturn, err := utils.ApiKeyGet(make(map[string]string), strRequest)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &accountsReturn)
+	} else {
+		json.Unmarshal([]byte(jsonAccountsReturn), &accountsReturn)
+	}
 
 	return accountsReturn
 }
@@ -194,8 +244,13 @@ func GetAccountBalance(strAccountID string) models.BalanceReturn {
 	balanceReturn := models.BalanceReturn{}
 
 	strRequest := fmt.Sprintf("/v1/account/accounts/%s/balance", strAccountID)
-	jsonBanlanceReturn := utils.ApiKeyGet(make(map[string]string), strRequest)
-	json.Unmarshal([]byte(jsonBanlanceReturn), &balanceReturn)
+	jsonBanlanceReturn, err := utils.ApiKeyGet(make(map[string]string), strRequest)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &balanceReturn)
+	} else {
+		json.Unmarshal([]byte(jsonBanlanceReturn), &balanceReturn)
+	}
 
 	return balanceReturn
 }

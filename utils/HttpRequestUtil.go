@@ -12,7 +12,7 @@ import (
 // strParams: string类型的请求参数, user=lxz&pwd=lxz
 // return: 请求结果
 //func HttpGetRequest(strUrl string, mapParams map[string]string) string {
-func HttpGetRequest(strUrl string, mapParams map[string]string) string {
+func HttpGetRequest(strUrl string, mapParams map[string]string) (string, string) {
 	httpClient := &http.Client{}
 
 	var strRequestUrl string
@@ -26,23 +26,23 @@ func HttpGetRequest(strUrl string, mapParams map[string]string) string {
 	// 构建Request, 并且按官方要求添加Http Header
 	request, err := http.NewRequest("GET", strRequestUrl, nil)
 	if nil != err {
-		return err.Error()
+		return "", "创建请求失败: " + err.Error()
 	}
 	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
 
 	// 发出请求
 	response, err := httpClient.Do(request)
 	if nil != err {
-		return err.Error()
+		return "", "请求失败: " + err.Error()
 	}
 	defer response.Body.Close()
 	// 解析响应内容
 	body, err := ioutil.ReadAll(response.Body)
 	if nil != err {
-		return err.Error()
+		return "", "读取相应内容失败: " + err.Error()
 	}
 
-	return string(body)
+	return string(body), ""
 }
 
 // 将map格式的请求参数转换为字符串格式的

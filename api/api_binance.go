@@ -49,8 +49,13 @@ func BianKLine(symbol string, interval models.BianInterval, limit int, startTime
 	strRequestUrl := "/api/v1/klines"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -71,8 +76,13 @@ func BianDepth(symbol string, limit int) models.BianDepth {
 	strRequestUrl := "/api/v1/depth"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -93,8 +103,13 @@ func BianTrade(symbol string, limit int) []models.BianTrade {
 	strRequestUrl := "/api/v1/trades"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -124,8 +139,13 @@ func BianAggTrade(symbol string, limit, fromId int, startTime, endTime int64) []
 	strRequestUrl := "/api/v1/aggTrades"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -139,8 +159,13 @@ func BianAvgPrice(symbol string) models.BianAvgPrice {
 	strRequestUrl := "/api/v3/avgPrice"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -154,8 +179,13 @@ func BianTicker24(symbol string) models.BianTicker24 {
 	strRequestUrl := "/api/v1/ticker/24hr"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -168,8 +198,13 @@ func BianTicker24All() []models.BianTicker24 {
 	strRequestUrl := "/api/v1/ticker/24hr"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -183,8 +218,13 @@ func BianLastPrice(symbol string) models.BianLastPrice {
 	strRequestUrl := "/api/v3/ticker/price"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -197,8 +237,13 @@ func BianLastAllPrice() []models.BianLastPrice {
 	strRequestUrl := "/api/v3/ticker/price"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -212,8 +257,13 @@ func BianBestTicker(symbol string) models.BianBestTicker {
 	strRequestUrl := "/api/v3/ticker/bookTicker"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
@@ -226,8 +276,13 @@ func BianAllBestTicker() []models.BianBestTicker {
 	strRequestUrl := "/api/v3/ticker/bookTicker"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.HttpGetRequest(strUrl, mapParams)
-	json.Unmarshal([]byte(jsonReturn), &result)
+	jsonReturn, err := utils.HttpGetRequest(strUrl, mapParams)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 
 	return result
 }
