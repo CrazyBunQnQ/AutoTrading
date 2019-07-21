@@ -350,7 +350,7 @@ type AccountRequest struct {
 }
 
 // Account represents user's account information.
-type Account struct {
+type BianAccount struct {
 	MakerCommision  int64
 	TakerCommision  int64
 	BuyerCommision  int64
@@ -363,7 +363,7 @@ type Account struct {
 
 type AccountEvent struct {
 	WSEvent
-	Account
+	BianAccount
 }
 
 // HuobiBalance groups balance-related information.
