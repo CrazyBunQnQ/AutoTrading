@@ -15,7 +15,7 @@ import (
 // mapParams: map类型的请求参数, key:value
 // strRequest: API路由路径
 // return: 请求结果
-func ApiKeyGet(mapParams map[string]string, strRequestPath string) string {
+func ApiKeyGet(mapParams map[string]string, strRequestPath string) (string, string) {
 	strMethod := "GET"
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 

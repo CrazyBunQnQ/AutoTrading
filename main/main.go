@@ -2,8 +2,11 @@ package main
 
 import (
 	"AutoTrading/api"
+	"AutoTrading/utils"
 	"io"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func main() {
@@ -21,12 +24,24 @@ func main() {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "hello world\n")
+	startTime := utils.UnixMillis(time.Now())
 	var status = api.BianOrderQuery("XRPUSDT", "", 207779114)
+	costTime := utils.UnixMillis(time.Now()) - startTime
+
 	if status.Price != "" {
-		io.WriteString(w, status.Price)
+		io.WriteString(w, "BianOrderQuery cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
 	} else if status.Err != "" {
-		io.WriteString(w, status.Err)
+		io.WriteString(w, status.Err+"\n")
 	} else {
 		io.WriteString(w, "无返回")
 	}
+	startTime = utils.UnixMillis(time.Now())
+	api.BianDepth("BTCUSDT", 5)
+	costTime = utils.UnixMillis(time.Now()) - startTime
+	io.WriteString(w, "BianDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
+
+	startTime = utils.UnixMillis(time.Now())
+	api.HuobiDepth("btcusdt", "step0")
+	costTime = utils.UnixMillis(time.Now()) - startTime
+	io.WriteString(w, "HuobiDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
 }
