@@ -60,9 +60,40 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "HuobiDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
 }
 
+func updateStrategyLBHS(name, platform string) models.StrategyLowBuyHighSell {
+	// TODO Set the usdt case based on the name case
+	strategyLBHS := queryStrategyLBHS(name+"USDT", platform)
+	quantity := queryQuantity(name, platform)
+	strategyLBHS.Quantity = quantity.Free + quantity.Locked
+	if strategyLBHS.Spend != 0 {
+		strategyLBHS.PositionAverage = strategyLBHS.Spend / strategyLBHS.Quantity
+	}
+	if strategyLBHS.PositionAverage != 0 {
+		strategyLBHS.TargetSellPrice = strategyLBHS.PositionAverage * strategyLBHS.TargetProfitPoint
+		strategyLBHS.TargetBuyPrice = strategyLBHS.PositionAverage * strategyLBHS.TargetBuyPoint
+	}
+	//	TODO other updates
+	// monthAverage
+
+	if _, err := o.Update(&strategyLBHS); err == nil {
+		fmt.Println("Update a Strategy object:", strategyLBHS.String())
+	}
+	return strategyLBHS
+}
+
 func queryStrategyLBHS(symbol, platform string) models.StrategyLowBuyHighSell {
 	data := models.StrategyLowBuyHighSell{Symbol: symbol, Platform: platform}
 	if created, id, err := o.ReadOrCreate(&data, "Symbol", "Platform"); err == nil {
+		if created {
+			fmt.Println("New Insert an object. Id:", id)
+		}
+	}
+	return data
+}
+
+func queryQuantity(name, platform string) models.Quantity {
+	data := models.Quantity{Name: name, Platform: platform}
+	if created, id, err := o.ReadOrCreate(&data, "Name", "Platform"); err == nil {
 		if created {
 			fmt.Println("New Insert an object. Id:", id)
 		}
@@ -84,8 +115,8 @@ func updateQuantity() {
 		if free == 0 && locked == 0 {
 			continue
 		}
-		quantity := models.Quantity{Symbol: balance.Symbol, Platform: platform}
-		if created, id, err := o.ReadOrCreate(&quantity, "Symbol", "Platform"); err == nil {
+		quantity := models.Quantity{Name: balance.Name, Platform: platform}
+		if created, id, err := o.ReadOrCreate(&quantity, "Name", "Platform"); err == nil {
 			if created {
 				fmt.Println("Insert a Quantity object. Id:", id)
 			}
@@ -112,7 +143,7 @@ func updateAccount() models.Account {
 	}
 	bianBalances := bianAccount.Balances
 	for _, balance := range bianBalances {
-		switch balance.Symbol {
+		switch balance.Name {
 		case "USDT":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Usdt = num
