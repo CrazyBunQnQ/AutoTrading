@@ -66,9 +66,10 @@ func updateAccount() models.Account {
 		log.Println("请求失败")
 		return account
 	}
-	err := o.Read(&account, "Platform")
-	if err != nil {
-		log.Println(err.Error())
+	if created, id, err := o.ReadOrCreate(&account, "Platform"); err == nil {
+		if created {
+			fmt.Println("New Insert an object. Id:", id)
+		}
 	}
 	bianBalances := bianAccount.Balances
 	for _, balance := range bianBalances {
@@ -76,21 +77,33 @@ func updateAccount() models.Account {
 		case "USDT":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Usdt = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.UsdtLocked = locked
 		case "BTC":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Btc = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.BtcLocked = locked
 		case "ETH":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Eth = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.EthLocked = locked
 		case "BNB":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Bnb = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.BnbLocked = locked
 		case "EOS":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Eos = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.EosLocked = locked
 		case "XRP":
 			num, _ := strconv.ParseFloat(balance.Free, 64)
 			account.Xrp = num
+			locked, _ := strconv.ParseFloat(balance.Locked, 64)
+			account.XrpLocked = locked
 		}
 	}
 

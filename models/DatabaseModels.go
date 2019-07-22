@@ -22,11 +22,17 @@ type Account struct {
 	Id         int64     `orm:"pk;auto"`
 	Platform   string    `orm:size(15)`
 	Usdt       float64   `orm:"digits(18);decimals(10)"`
+	UsdtLocked float64   `orm:"digits(18);decimals(10)"`
 	Btc        float64   `orm:"digits(18);decimals(10)"`
+	BtcLocked  float64   `orm:"digits(18);decimals(10)"`
 	Eth        float64   `orm:"digits(18);decimals(10)"`
+	EthLocked  float64   `orm:"digits(18);decimals(10)"`
 	Bnb        float64   `orm:"digits(18);decimals(10)"`
+	BnbLocked  float64   `orm:"digits(18);decimals(10)"`
 	Eos        float64   `orm:"digits(18);decimals(10)"`
+	EosLocked  float64   `orm:"digits(18);decimals(10)"`
 	Xrp        float64   `orm:"digits(18);decimals(10)"`
+	XrpLocked  float64   `orm:"digits(18);decimals(10)"`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime time.Time `orm:"auto_now;type(datetime)"`
 }
