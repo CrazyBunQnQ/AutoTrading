@@ -19,6 +19,7 @@ func init() {
 	orm.RegisterDataBase("default", "mysql", "root:zy26T$b7V8i3g4mW@tcp(127.0.0.1:3306)/autotrade?charset=utf8mb4", 30)
 	orm.RegisterModel(new(models.StrategyLowBuyHighSell))
 	orm.RegisterModel(new(models.Account))
+	orm.RegisterModel(new(models.Quantity))
 	o = orm.NewOrm()
 }
 
@@ -57,6 +58,44 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	api.HuobiDepth("btcusdt", "step0")
 	costTime = utils.UnixMillis(time.Now()) - startTime
 	io.WriteString(w, "HuobiDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
+}
+
+func queryStrategyLBHS(symbol, platform string) models.StrategyLowBuyHighSell {
+	data := models.StrategyLowBuyHighSell{Symbol: symbol, Platform: platform}
+	if created, id, err := o.ReadOrCreate(&data, "Symbol", "Platform"); err == nil {
+		if created {
+			fmt.Println("New Insert an object. Id:", id)
+		}
+	}
+	return data
+}
+
+func updateQuantity() {
+	platform := "binance"
+	bianAccount := api.BianAccountInfo()
+	if bianAccount.Err != "" {
+		log.Println("请求失败")
+		return
+	}
+	bianBalances := bianAccount.Balances
+	for _, balance := range bianBalances {
+		free, _ := strconv.ParseFloat(balance.Free, 64)
+		locked, _ := strconv.ParseFloat(balance.Locked, 64)
+		if free == 0 && locked == 0 {
+			continue
+		}
+		quantity := models.Quantity{Symbol: balance.Symbol, Platform: platform}
+		if created, id, err := o.ReadOrCreate(&quantity, "Symbol", "Platform"); err == nil {
+			if created {
+				fmt.Println("Insert a Quantity object. Id:", id)
+			}
+		}
+		quantity.Free = free
+		quantity.Locked = locked
+		if _, err := o.Update(&quantity); err == nil {
+			fmt.Println("Update a Quantity object:", quantity.String())
+		}
+	}
 }
 
 func updateAccount() models.Account {
