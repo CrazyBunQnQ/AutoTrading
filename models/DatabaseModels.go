@@ -37,6 +37,21 @@ type Account struct {
 	UpdateTime time.Time `orm:"auto_now;type(datetime)"`
 }
 
+func (quantity Quantity) String() string {
+	return fmt.Sprintf("\nid:%d\nsymbol:%s\nplatform:%s\nfree:%.10f\nlocked:%.10f\n[createTime:%s updateTime:%s]\n",
+		quantity.Id, quantity.Symbol, quantity.Platform, quantity.Free, quantity.Locked, quantity.CreateTime, quantity.UpdateTime)
+}
+
+type Quantity struct {
+	Id         int64     `orm:"pk;auto"`
+	Symbol     string    `orm:"size(15)"`
+	Platform   string    `orm:"size(15)"`
+	Free       float64   `orm:"digits(18);decimals(10)"`
+	Locked     float64   `orm:"digits(18);decimals(10)"`
+	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
+	UpdateTime time.Time `orm:"auto_now;type(datetime)"`
+}
+
 func (strategyLowBuyHighSell StrategyLowBuyHighSell) String() string {
 	return fmt.Sprintf("id:%d\nsymbol:%s\nplatform:%sspend:%.10f\npositionAverage:%.10f\nlastSpend:%.10f\nprofitPoint:%.3f\ntargetSellPrice:%.10f\nbuyPoint:%.3f\ntargetBuyPrice:%.10f\nmonthAverage:%.10f[createTime:%s updateTime:%s]\n",
 		strategyLowBuyHighSell.Id, strategyLowBuyHighSell.Symbol, strategyLowBuyHighSell.Platform, strategyLowBuyHighSell.Spend, strategyLowBuyHighSell.PositionAverage, strategyLowBuyHighSell.LastSpend,

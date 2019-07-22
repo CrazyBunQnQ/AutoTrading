@@ -34,6 +34,7 @@ func TestDepth(t *testing.T) {
 	// orderid: 207779114
 	//log.Println(api.BianOrderByLimit("XRPUSDT", models.SideSell, models.GTC, 50, 0.4, 0))
 	//log.Println(api.BianOrderQuery("XRPUSDT", "", 207779114))
+	updateQuantity()
 	log.Println(updateAccount().String())
-
+	log.Println(queryStrategyLBHS("XRPUSDT", "binance"))
 }

@@ -11,6 +11,20 @@ create table autotrade.platform
         unique (name)
 );
 
+create table autotrade.quantity
+(
+    id          int auto_increment,
+    symbol      varchar(15)                                                           not null,
+    platform    varchar(15)                                                           not null,
+    free        decimal(18, 10) default 0.0000000000                                  not null,
+    locked      decimal(18, 10) default 0.0000000000                                  not null,
+    create_time timestamp       default CURRENT_TIMESTAMP                             not null,
+    update_time timestamp       default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP not null,
+    constraint quantity_pk
+        primary key (id),
+    constraint quantity_symbol_platform_uindex
+        unique (symbol, platform)
+);
 
 create table autotrade.account
 (
