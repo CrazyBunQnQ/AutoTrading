@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -61,6 +62,11 @@ func hello(w http.ResponseWriter, r *http.Request) {
 func updateAccount() models.Account {
 	bianAccount := api.BianAccountInfo()
 	account := models.Account{Platform: "binance"}
+	if bianAccount.Err != "" {
+		log.Println("请求失败")
+		return account
+	}
+	o.Read(&account)
 	bianBalances := bianAccount.Balances
 	for _, balance := range bianBalances {
 		switch balance.Symbol {
@@ -85,7 +91,7 @@ func updateAccount() models.Account {
 		}
 	}
 
-	id, err := o.Insert(&account)
+	id, err := o.Update(&account)
 	a := models.Account{Id: id}
 	err = o.Read(&a)
 	fmt.Printf("ERR: %v\n", err)
