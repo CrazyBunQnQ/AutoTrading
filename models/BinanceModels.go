@@ -112,6 +112,29 @@ type BianOrderStatus struct {
 	Err                 string          `json:"err"`
 }
 
+// Account represents user's account information.
+type BianAccount struct {
+	MakerCommision  int64 `json:"makerCommission"`
+	TakerCommision  int64 `json:"takerCommission"`
+	BuyerCommision  int64 `json:"buyerCommission"`
+	SellerCommision int64 `json:"sellerCommission"`
+	CanTrade        bool  `json:"canTrade"`
+	CanWithdraw     bool  `json:"canWithdraw"`
+	CanDeposit      bool  `json:"canDeposit"`
+	UpdateTime      int64 `json:"updateTime"`
+	Balances        []BianBalance
+	Err             string `json:"err"`
+	Code            int    `json:"code"`
+	Msg             string `json:"msg"`
+}
+
+// BianBalance groups balance-related information.
+type BianBalance struct {
+	Symbol string `json:"asset"`
+	Free   string `json:"free"`
+	Locked string `json:"locked"`
+}
+
 // **************** Enum *****************
 
 // Binance BianInterval represents interval enum.
@@ -349,28 +372,9 @@ type AccountRequest struct {
 	Timestamp  time.Time
 }
 
-// Account represents user's account information.
-type BianAccount struct {
-	MakerCommision  int64
-	TakerCommision  int64
-	BuyerCommision  int64
-	SellerCommision int64
-	CanTrade        bool
-	CanWithdraw     bool
-	CanDeposit      bool
-	Balances        []*HuobiBalance
-}
-
 type AccountEvent struct {
 	WSEvent
 	BianAccount
-}
-
-// HuobiBalance groups balance-related information.
-type BianBalance struct {
-	Asset  string
-	Free   float64
-	Locked float64
 }
 
 // MyTradesRequest represents MyTrades request data.
