@@ -66,7 +66,10 @@ func updateAccount() models.Account {
 		log.Println("请求失败")
 		return account
 	}
-	o.Read(&account)
+	err := o.Read(&account, "Platform")
+	if err != nil {
+		log.Println(err.Error())
+	}
 	bianBalances := bianAccount.Balances
 	for _, balance := range bianBalances {
 		switch balance.Symbol {
