@@ -347,6 +347,7 @@ func BianAccountInfo() models.BianAccount {
 
 	mapParams := make(map[string]string)
 	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+	mapParams["recvWindow"] = strconv.FormatInt(recvWindow(5*time.Second), 10)
 
 	strRequestUrl := "/api/v3/account"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
@@ -360,6 +361,10 @@ func BianAccountInfo() models.BianAccount {
 	}
 
 	return result
+}
+
+func recvWindow(d time.Duration) int64 {
+	return int64(d) / int64(time.Millisecond)
 }
 
 // ************************************************************

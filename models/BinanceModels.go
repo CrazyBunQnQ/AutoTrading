@@ -114,14 +114,15 @@ type BianOrderStatus struct {
 
 // Account represents user's account information.
 type BianAccount struct {
-	MakerCommision  int64 `json:"makerCommission"`
-	TakerCommision  int64 `json:"takerCommission"`
-	BuyerCommision  int64 `json:"buyerCommission"`
-	SellerCommision int64 `json:"sellerCommission"`
-	CanTrade        bool  `json:"canTrade"`
-	CanWithdraw     bool  `json:"canWithdraw"`
-	CanDeposit      bool  `json:"canDeposit"`
-	UpdateTime      int64 `json:"updateTime"`
+	MakerCommision  int64  `json:"makerCommission"`
+	TakerCommision  int64  `json:"takerCommission"`
+	BuyerCommision  int64  `json:"buyerCommission"`
+	SellerCommision int64  `json:"sellerCommission"`
+	CanTrade        bool   `json:"canTrade"`
+	CanWithdraw     bool   `json:"canWithdraw"`
+	CanDeposit      bool   `json:"canDeposit"`
+	UpdateTime      int64  `json:"updateTime"`
+	AccountType     string `json:"accountType"`
 	Balances        []BianBalance
 	Err             string `json:"err"`
 	Code            int    `json:"code"`
