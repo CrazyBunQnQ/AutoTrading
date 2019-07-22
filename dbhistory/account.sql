@@ -14,7 +14,7 @@ create table autotrade.platform
 create table autotrade.quantity
 (
     id          int auto_increment,
-    symbol      varchar(15)                                                           not null,
+    name        varchar(15)                                                           not null,
     platform    varchar(15)                                                           not null,
     free        decimal(18, 10) default 0.0000000000                                  not null,
     locked      decimal(18, 10) default 0.0000000000                                  not null,
@@ -23,7 +23,7 @@ create table autotrade.quantity
     constraint quantity_pk
         primary key (id),
     constraint quantity_symbol_platform_uindex
-        unique (symbol, platform)
+        unique (name, platform)
 );
 
 create table autotrade.account
@@ -65,6 +65,7 @@ create table autotrade.strategy_low_buy_high_sell
     target_buy_point    double(4, 3)    default 0.92                                          not null comment 'Buy when the current price/average price is lower than this value',
     target_buy_price    decimal(18, 10) default 0                                             not null,
     month_average       decimal(18, 10) default 0                                             not null comment 'Average market price for a month (30 days)',
+    status              int(1)          default 0                                             not null,
     create_time         datetime        default CURRENT_TIMESTAMP                             not null,
     update_time         datetime        default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP not null,
     constraint strategy_low_buy_high_sell_pk

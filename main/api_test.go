@@ -37,4 +37,5 @@ func TestDepth(t *testing.T) {
 	updateQuantity()
 	log.Println(updateAccount().String())
 	log.Println(queryStrategyLBHS("XRPUSDT", "binance"))
+	updateStrategyLBHS("XRP", "binance")
 }

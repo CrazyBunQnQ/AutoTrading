@@ -131,7 +131,7 @@ type BianAccount struct {
 
 // BianBalance groups balance-related information.
 type BianBalance struct {
-	Symbol string `json:"asset"`
+	Name   string `json:"asset"`
 	Free   string `json:"free"`
 	Locked string `json:"locked"`
 }
