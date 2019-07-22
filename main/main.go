@@ -2,12 +2,24 @@ package main
 
 import (
 	"AutoTrading/api"
+	"AutoTrading/models"
 	"AutoTrading/utils"
+	"fmt"
+	"github.com/astaxie/beego/orm"
 	"io"
 	"net/http"
 	"strconv"
 	"time"
 )
+
+var o orm.Ormer
+
+func init() {
+	orm.RegisterDataBase("default", "mysql", "root:zy26T$b7V8i3g4mW@tcp(127.0.0.1:3306)/autotrade?charset=utf8mb4", 30)
+	orm.RegisterModel(new(models.StrategyLowBuyHighSell))
+	orm.RegisterModel(new(models.Account))
+	o = orm.NewOrm()
+}
 
 func main() {
 
@@ -44,4 +56,38 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	api.HuobiDepth("btcusdt", "step0")
 	costTime = utils.UnixMillis(time.Now()) - startTime
 	io.WriteString(w, "HuobiDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
+}
+
+func updateAccount() models.Account {
+	bianAccount := api.BianAccountInfo()
+	account := models.Account{Platform: "binance"}
+	bianBalances := bianAccount.Balances
+	for _, balance := range bianBalances {
+		switch balance.Symbol {
+		case "USDT":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Usdt = num
+		case "BTC":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Btc = num
+		case "ETH":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Eth = num
+		case "BNB":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Bnb = num
+		case "EOS":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Eos = num
+		case "XRP":
+			num, _ := strconv.ParseFloat(balance.Free, 64)
+			account.Xrp = num
+		}
+	}
+
+	id, err := o.Insert(&account)
+	a := models.Account{Id: id}
+	err = o.Read(&a)
+	fmt.Printf("ERR: %v\n", err)
+	return a
 }

@@ -6,7 +6,7 @@ import (
 )
 
 type Platform struct {
-	Id         int       `orm:"pk;auto"`
+	Id         int64     `orm:"pk;auto"`
 	Name       string    `orm:size(15);unique`
 	NameCn     string    `orm:size(10);null`
 	CreateTime time.Time `orm:"auto_now_add;type(datetime)"`
@@ -19,7 +19,7 @@ func (account Account) String() string {
 }
 
 type Account struct {
-	Id         int       `orm:"pk;auto"`
+	Id         int64     `orm:"pk;auto"`
 	Platform   string    `orm:size(15)`
 	Usdt       float64   `orm:"digits(18);decimals(10)"`
 	Btc        float64   `orm:"digits(18);decimals(10)"`
@@ -39,7 +39,7 @@ func (strategyLowBuyHighSell StrategyLowBuyHighSell) String() string {
 }
 
 type StrategyLowBuyHighSell struct {
-	Id                int       `orm:"pk;auto"`
+	Id                int64     `orm:"pk;auto"`
 	Symbol            string    `orm:"size(15)"`
 	Platform          string    `orm:"size(15)"`
 	Spend             float64   `orm:"digits(18);decimals(10)"`

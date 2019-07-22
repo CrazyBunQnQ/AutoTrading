@@ -342,6 +342,26 @@ func BianOrderQuery(symbol, origClientOrderId string, orderId int64) models.Bian
 	return result
 }
 
+func BianAccountInfo() models.BianAccount {
+	result := models.BianAccount{}
+
+	mapParams := make(map[string]string)
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+
+	strRequestUrl := "/api/v3/account"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn, err := utils.BianGetRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
+
+	return result
+}
+
 // ************************************************************
 
 // Exchange information
