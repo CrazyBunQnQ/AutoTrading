@@ -181,21 +181,24 @@ func updateAccount() models.Account {
 		}
 	}
 
-	id, err := o.Update(&account)
-	a := models.Account{Id: id}
-	err = o.Read(&a)
-	fmt.Printf("ERR: %v\n", err)
-	return a
+	rows, err := o.Update(&account)
+	if err != nil {
+		fmt.Printf("ERR: %v\n", err)
+	}
+	if rows == 0 {
+		fmt.Printf("ERR: No record update\n")
+	}
+	return account
 }
 
 // Low price buy high price selling strategy
 func RunLBHS() {
 	// TODO All currencies with a policy status of 1 are participating in this strategy
 
-	name := "BTC"
+	name := "XRP"
 	symbol := name + "USDT"
 	platform := "binance"
-	finishTrade := false
+	sideBy := 0 // 1: sell, 2:buy
 
 	lbhs := queryStrategyLBHS(symbol, platform)
 	targetSellPrice := lbhs.TargetSellPrice
@@ -203,35 +206,79 @@ func RunLBHS() {
 	// Calculate whether the balance is greater than the next cover price
 	nextSpend := lbhs.LastSpend * lbhs.SpendCoefficient
 	usdtQuantity := queryQuantity("USDT", platform)
+	coinQuantity := queryQuantity(name, platform)
+	notEnough := usdtQuantity.Free < nextSpend
+
 	if usdtQuantity.Free < nextSpend && usdtQuantity.Free >= nextSpend/2 {
 		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 2
 	} else if usdtQuantity.Free < nextSpend/2 && usdtQuantity.Free >= nextSpend/3 {
 		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 3
 	} else if usdtQuantity.Free < nextSpend/3 {
 		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 4
-	} else {
-		// TODO The balance is sufficient, and the sales quota is adjusted according to the average market price.
 	}
 
 	// Get the latest market price
 	curPrice, _ := strconv.ParseFloat(api.BianTrade(symbol, 1)[0].Price, 64)
-	fmt.Sprintf("Current market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f", name, curPrice, targetSellPrice, nextSpend)
+	log.Println(fmt.Sprintf("\nCurrent market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f\nNext buy price: %.10f", name, curPrice, targetSellPrice, nextSpend, lbhs.TargetBuyPrice))
 
 	// Determine if it is higher than the specified value？Or is it lower than the specified value?
 	if curPrice > targetSellPrice {
-		// TODO Sell ​​target amount at current market price
+		sideBy = 1
+		// Sell ​​target amount at current market price
+		if notEnough {
+			getUsdtBySell := lbhs.LastSpend
+			targetSellQuantity := getUsdtBySell * curPrice
+			if coinQuantity.Free > targetSellQuantity {
+				// TODO Sell targetSellQuantity coins
+			} else {
+				getUsdtBySell = coinQuantity.Free * curPrice
+				// TODO Sell all free coins
+			}
+			//update spend and actual cost
+			lbhs.ActualCost = lbhs.ActualCost - getUsdtBySell
+			lbhs.LastSpend = lbhs.LastSpend / lbhs.SpendCoefficient
+		} else {
+			// TODO The balance is sufficient, and the sales quota is adjusted according to the average market price.
+
+		}
 	} else if curPrice < lbhs.TargetBuyPrice {
 		if usdtQuantity.Free > nextSpend {
+			sideBy = 2
 			// TODO Spend nextSpend amount to purchase
+
+			lbhs.Spend = lbhs.Spend + nextSpend
+			//update spend and actual cost
+			lbhs.ActualCost = lbhs.ActualCost + nextSpend
+			lbhs.LastSpend = nextSpend
 		} else {
 			// TODO Send a message to remind you to top up
 		}
 	}
 
-	if finishTrade {
-		//TODO update spend and actual cost
+	if sideBy == 0 {
+		log.Println("There is no trade")
+		return // continue
 	}
-	// TODO Check the actual balance of the account after the transaction
-	// TODO Reset parameters, Calculate the average price of the current position
-	// TODO Set the total call charge after the transaction = the unit price of this transaction * Quantity
+
+	// Check the actual balance of the account after the transaction
+	updateQuantity()
+	//usdtQuantity = queryQuantity("USDT", platform)
+	coinQuantity = queryQuantity(name, platform)
+
+	// Update strategy, Reset parameters, Calculate the average price of the current position
+	lbhs.Quantity = coinQuantity.Free + coinQuantity.Locked
+	if sideBy == 1 { // sell
+		lbhs.Spend = lbhs.Quantity * curPrice
+		lbhs.PositionAverage = curPrice
+	} else { // sideBy == 2 buy
+		lbhs.PositionAverage = lbhs.Spend / lbhs.Quantity
+	}
+	lbhs.TargetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint
+	lbhs.TargetBuyPrice = lbhs.PositionAverage * lbhs.TargetBuyPoint
+
+	log.Println(lbhs.String())
+	// update table
+	//if _, err := o.Update(&lbhs); err == nil {
+	//	fmt.Println("Update StrategyLowBuyHighSell:", lbhs.String())
+	//}
 }
