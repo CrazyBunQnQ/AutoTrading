@@ -64,6 +64,10 @@ func monthlyAvg() {
 	// TODO Calculate/get monthly average price every day
 }
 
+func updateHistory() {
+	// TODO update trade history
+}
+
 func updateStrategyLBHS(name, platform string) models.StrategyLowBuyHighSell {
 	// TODO Set the usdt case based on the name case
 	strategyLBHS := queryStrategyLBHS(name+"USDT", platform)
@@ -191,6 +195,10 @@ func updateAccount() models.Account {
 	return account
 }
 
+func orderByQuantity(symbol, platform string, price, quantity float64, isBuy bool) {
+	// TODO order and output
+}
+
 // Low price buy high price selling strategy
 func RunLBHS() {
 	// TODO All currencies with a policy status of 1 are participating in this strategy
@@ -198,7 +206,7 @@ func RunLBHS() {
 	name := "XRP"
 	symbol := name + "USDT"
 	platform := "binance"
-	sideBy := 0 // 1: sell, 2:buy
+	side := 0 // 1: sell, 2:buy
 
 	lbhs := queryStrategyLBHS(symbol, platform)
 	targetSellPrice := lbhs.TargetSellPrice
@@ -223,7 +231,7 @@ func RunLBHS() {
 
 	// Determine if it is higher than the specified value？Or is it lower than the specified value?
 	if curPrice > targetSellPrice {
-		sideBy = 1
+		side = 1
 		// Sell ​​target amount at current market price
 		if notEnough {
 			getUsdtBySell := lbhs.LastSpend
@@ -243,7 +251,7 @@ func RunLBHS() {
 		}
 	} else if curPrice < lbhs.TargetBuyPrice {
 		if usdtQuantity.Free > nextSpend {
-			sideBy = 2
+			side = 2
 			// TODO Spend nextSpend amount to purchase
 
 			lbhs.Spend = lbhs.Spend + nextSpend
@@ -255,7 +263,7 @@ func RunLBHS() {
 		}
 	}
 
-	if sideBy == 0 {
+	if side == 0 {
 		log.Println("There is no trade")
 		return // continue
 	}
@@ -267,7 +275,7 @@ func RunLBHS() {
 
 	// Update strategy, Reset parameters, Calculate the average price of the current position
 	lbhs.Quantity = coinQuantity.Free + coinQuantity.Locked
-	if sideBy == 1 { // sell
+	if side == 1 { // sell
 		lbhs.Spend = lbhs.Quantity * curPrice
 		lbhs.PositionAverage = curPrice
 	} else { // sideBy == 2 buy
