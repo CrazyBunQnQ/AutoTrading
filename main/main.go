@@ -60,6 +60,10 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "HuobiDepth cost time: "+strconv.FormatInt(costTime, 10)+"ms\n")
 }
 
+func monthlyAvg() {
+	// TODO Calculate/get monthly average price every day
+}
+
 func updateStrategyLBHS(name, platform string) models.StrategyLowBuyHighSell {
 	// TODO Set the usdt case based on the name case
 	strategyLBHS := queryStrategyLBHS(name+"USDT", platform)
@@ -182,4 +186,52 @@ func updateAccount() models.Account {
 	err = o.Read(&a)
 	fmt.Printf("ERR: %v\n", err)
 	return a
+}
+
+// Low price buy high price selling strategy
+func RunLBHS() {
+	// TODO All currencies with a policy status of 1 are participating in this strategy
+
+	name := "BTC"
+	symbol := name + "USDT"
+	platform := "binance"
+	finishTrade := false
+
+	lbhs := queryStrategyLBHS(symbol, platform)
+	targetSellPrice := lbhs.TargetSellPrice
+
+	// Calculate whether the balance is greater than the next cover price
+	nextSpend := lbhs.LastSpend * lbhs.SpendCoefficient
+	usdtQuantity := queryQuantity("USDT", platform)
+	if usdtQuantity.Free < nextSpend && usdtQuantity.Free >= nextSpend/2 {
+		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 2
+	} else if usdtQuantity.Free < nextSpend/2 && usdtQuantity.Free >= nextSpend/3 {
+		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 3
+	} else if usdtQuantity.Free < nextSpend/3 {
+		targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 4
+	} else {
+		// TODO The balance is sufficient, and the sales quota is adjusted according to the average market price.
+	}
+
+	// Get the latest market price
+	curPrice, _ := strconv.ParseFloat(api.BianTrade(symbol, 1)[0].Price, 64)
+	fmt.Sprintf("Current market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f", name, curPrice, targetSellPrice, nextSpend)
+
+	// Determine if it is higher than the specified value？Or is it lower than the specified value?
+	if curPrice > targetSellPrice {
+		// TODO Sell ​​target amount at current market price
+	} else if curPrice < lbhs.TargetBuyPrice {
+		if usdtQuantity.Free > nextSpend {
+			// TODO Spend nextSpend amount to purchase
+		} else {
+			// TODO Send a message to remind you to top up
+		}
+	}
+
+	if finishTrade {
+		//TODO update spend and actual cost
+	}
+	// TODO Check the actual balance of the account after the transaction
+	// TODO Reset parameters, Calculate the average price of the current position
+	// TODO Set the total call charge after the transaction = the unit price of this transaction * Quantity
 }
