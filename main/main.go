@@ -215,11 +215,12 @@ func orderByQuantity(symbol, platform string, price, quantity float64, isBuy boo
 		}
 		order := api.BianOrderByLimit(symbol, side, models.GTC, quantity, price, 0)
 		if order.Err != "" {
-			return false, "Order failed"
+			log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: %s", side, quantity, symbol, price, order.Err))
+			return false, order.Err
 		}
-		log.Println(fmt.Sprintf("Order at Binance: %s %.10f %s at the price of %.10f", side, quantity, symbol, price))
+		log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: success", side, quantity, symbol, price))
 		// TODO Save trade history
-		return true, ""
+		return true, "Order success"
 	}
 	return false, "Not supported now"
 }
@@ -266,10 +267,18 @@ func RunLBHS() {
 				getUsdtBySell := lbhs.LastSpend
 				targetSellQuantity := getUsdtBySell * curPrice
 				if coinQuantity.Free > targetSellQuantity {
-					// TODO Sell targetSellQuantity coins
+					// Sell targetSellQuantity coins
+					success, _ := orderByQuantity(symbol, platform, curPrice, targetSellQuantity, false)
+					if !success {
+						continue
+					}
 				} else {
 					getUsdtBySell = coinQuantity.Free * curPrice
-					// TODO Sell all free coins
+					// Sell all free coins
+					success, _ := orderByQuantity(symbol, platform, curPrice, coinQuantity.Free, false)
+					if !success {
+						continue
+					}
 				}
 				//update spend and actual cost
 				lbhs.ActualCost = lbhs.ActualCost - getUsdtBySell
@@ -281,14 +290,17 @@ func RunLBHS() {
 		} else if curPrice < lbhs.TargetBuyPrice {
 			if usdtQuantity.Free > nextSpend {
 				side = 2
-				// TODO Spend nextSpend amount to purchase
-
+				// Spend nextSpend amount to purchase
+				success, _ := orderByUsdt(symbol, platform, curPrice, nextSpend, true)
+				if !success {
+					continue
+				}
 				lbhs.Spend = lbhs.Spend + nextSpend
 				//update spend and actual cost
 				lbhs.ActualCost = lbhs.ActualCost + nextSpend
 				lbhs.LastSpend = nextSpend
 			} else {
-				// TODO Send a message to remind you to top up
+				// TODO Send a message to remind you to top up. like IFTTT
 			}
 		}
 
