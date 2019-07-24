@@ -55,6 +55,7 @@ create table autotrade.strategy_low_buy_high_sell
 (
     id                  int auto_increment,
     symbol              varchar(15)                                                           not null,
+    coin_name           varchar(11)                                                           not null,
     platform            varchar(15)                                                           not null,
     quantity            decimal(18, 10) default 0                                             not null comment 'total count',
     spend               decimal(18, 10) default 0                                             not null comment 'total spend, But not the actual total consumption',
