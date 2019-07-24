@@ -53,9 +53,9 @@ type Quantity struct {
 }
 
 func (strategyLowBuyHighSell StrategyLowBuyHighSell) String() string {
-	return fmt.Sprintf("id:%d\nsymbol:%s\ncoinName:%s\nplatform:%s\nquantity:%.10f\nspend:%.10f\npositionAverage:%.10f\nlastSpend:%.10f\nspendCoefficient:%.3f\nprofitPoint:%.3f\ntargetSellPrice:%.10f\nbuyPoint:%.3f\ntargetBuyPrice:%.10f\nmonthAverage:%.10f\nstatus:%d\nacturlCost:%.10f\n[createTime:%s updateTime:%s]\n",
+	return fmt.Sprintf("id:%d\nsymbol:%s\ncoinName:%s\nplatform:%s\nquantity:%.10f\nspend:%.10f\npositionAverage:%.10f\nlastSpend:%.10f\nspendCoefficient:%.3f\nprofitPoint:%.3f\ntargetSellPrice:%.10f\nbuyPoint:%.3f\ntargetBuyPrice:%.10f\nmonthAverage:%.10f\nenabled:%t\nacturlCost:%.10f\n[createTime:%s updateTime:%s]\n",
 		strategyLowBuyHighSell.Id, strategyLowBuyHighSell.Symbol, strategyLowBuyHighSell.CoinName, strategyLowBuyHighSell.Platform, strategyLowBuyHighSell.Quantity, strategyLowBuyHighSell.Spend, strategyLowBuyHighSell.SpendCoefficient, strategyLowBuyHighSell.PositionAverage, strategyLowBuyHighSell.LastSpend,
-		strategyLowBuyHighSell.TargetProfitPoint, strategyLowBuyHighSell.TargetSellPrice, strategyLowBuyHighSell.TargetBuyPoint, strategyLowBuyHighSell.TargetBuyPrice, strategyLowBuyHighSell.MonthAverage, strategyLowBuyHighSell.Status, strategyLowBuyHighSell.ActualCost,
+		strategyLowBuyHighSell.TargetProfitPoint, strategyLowBuyHighSell.TargetSellPrice, strategyLowBuyHighSell.TargetBuyPoint, strategyLowBuyHighSell.TargetBuyPrice, strategyLowBuyHighSell.MonthAverage, strategyLowBuyHighSell.Enabled, strategyLowBuyHighSell.ActualCost,
 		strategyLowBuyHighSell.CreateTime, strategyLowBuyHighSell.UpdateTime)
 }
 
@@ -74,7 +74,8 @@ type StrategyLowBuyHighSell struct {
 	TargetBuyPoint    float64   `orm:"digits(4);decimals(3);default(0.95)"`
 	TargetBuyPrice    float64   `orm:"digits(18);decimals(10)"`
 	MonthAverage      float64   `orm:"digits(18);decimals(10)"`
-	Status            int       `orm:default(0)`
+	LastOrderId       int64     `orm:default(0)`
+	Enabled           bool      `orm:default(false)`
 	ActualCost        float64   `orm:"digits(18);decimals(10)"`
 	CreateTime        time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime        time.Time `orm:"auto_now;type(datetime)"`

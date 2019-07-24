@@ -93,7 +93,7 @@ func updateStrategyLBHS(name, platform string) models.StrategyLowBuyHighSell {
 
 func queryEnabledStrategyLBHS() []*models.StrategyLowBuyHighSell {
 	var datas []*models.StrategyLowBuyHighSell
-	num, err := o.QueryTable("strategy_low_buy_high_sell").Filter("status", 1).All(&datas)
+	num, err := o.QueryTable("strategy_low_buy_high_sell").Filter("enabled", true).All(&datas)
 	fmt.Printf("Returned Rows Num: %d, %s", num, err)
 	return datas
 }
@@ -205,7 +205,7 @@ func updateAccount() models.Account {
 	return account
 }
 
-func orderByQuantity(symbol, platform string, price, quantity float64, isBuy bool) (bool, string) {
+func orderByQuantity(symbol, platform string, price, quantity float64, isBuy bool) (int64, string) {
 	// order and output
 	switch platform {
 	case "binance":
@@ -216,16 +216,16 @@ func orderByQuantity(symbol, platform string, price, quantity float64, isBuy boo
 		order := api.BianOrderByLimit(symbol, side, models.GTC, quantity, price, 0)
 		if order.Err != "" {
 			log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: %s", side, quantity, symbol, price, order.Err))
-			return false, order.Err
+			return 0, order.Err
 		}
 		log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: success", side, quantity, symbol, price))
 		// TODO Save trade history
-		return true, "Order success"
+		return order.OrderID, "Order success"
 	}
-	return false, "Not supported now"
+	return 0, "Not supported now"
 }
 
-func orderByUsdt(symbol, platform string, price, usdt float64, isBuy bool) (bool, string) {
+func orderByUsdt(symbol, platform string, price, usdt float64, isBuy bool) (int64, string) {
 	quantity := usdt / price
 	return orderByQuantity(symbol, platform, price, quantity, isBuy)
 }
@@ -235,6 +235,17 @@ func RunLBHS() {
 	// All currencies with a policy status of 1 are participating in this strategy
 	datas := queryEnabledStrategyLBHS()
 	for _, lbhs := range datas {
+		// TODO Judge whether to withdraw the order and
+		if lbhs.LastOrderId != 0 {
+			// TODO Check the status of the order and set the LastOrderId to 0 when the order is completed
+			completed := false
+			// TODO To cancel the order (restore the last state according to the order was not completed within ten minutes)
+			if completed {
+				continue
+			}
+			lbhs.LastOrderId = 0
+			// TODO update balance?
+		}
 		name := lbhs.CoinName
 		symbol := lbhs.Symbol
 		platform := lbhs.Platform
@@ -260,6 +271,7 @@ func RunLBHS() {
 		log.Println(fmt.Sprintf("\nCurrent market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f\nNext buy price: %.10f\n", name, curPrice, targetSellPrice, nextSpend, lbhs.TargetBuyPrice))
 
 		// Determine if it is higher than the specified value？Or is it lower than the specified value?
+		var orderId int64 = 0
 		if curPrice > targetSellPrice {
 			side = 1
 			// Sell ​​target amount at current market price
@@ -268,15 +280,15 @@ func RunLBHS() {
 				targetSellQuantity := getUsdtBySell * curPrice
 				if coinQuantity.Free > targetSellQuantity {
 					// Sell targetSellQuantity coins
-					success, _ := orderByQuantity(symbol, platform, curPrice, targetSellQuantity, false)
-					if !success {
+					orderId, _ = orderByQuantity(symbol, platform, curPrice, targetSellQuantity, false)
+					if orderId == 0 { // fail
 						continue
 					}
 				} else {
 					getUsdtBySell = coinQuantity.Free * curPrice
 					// Sell all free coins
-					success, _ := orderByQuantity(symbol, platform, curPrice, coinQuantity.Free, false)
-					if !success {
+					orderId, _ = orderByQuantity(symbol, platform, curPrice, coinQuantity.Free, false)
+					if orderId == 0 { // fail
 						continue
 					}
 				}
@@ -291,8 +303,8 @@ func RunLBHS() {
 			if usdtQuantity.Free > nextSpend {
 				side = 2
 				// Spend nextSpend amount to purchase
-				success, _ := orderByUsdt(symbol, platform, curPrice, nextSpend, true)
-				if !success {
+				orderId, _ := orderByUsdt(symbol, platform, curPrice, nextSpend, true)
+				if orderId == 0 { // fail
 					continue
 				}
 				lbhs.Spend = lbhs.Spend + nextSpend
@@ -303,6 +315,9 @@ func RunLBHS() {
 				// TODO Send a message to remind you to top up. like IFTTT
 			}
 		}
+
+		// Set the lastOrderId
+		lbhs.LastOrderId = orderId
 
 		if side == 0 {
 			log.Println("There is no trade")
