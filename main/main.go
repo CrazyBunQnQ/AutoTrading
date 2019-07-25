@@ -230,25 +230,47 @@ func orderByUsdt(symbol, platform string, price, usdt float64, isBuy bool) (int6
 	return orderByQuantity(symbol, platform, price, quantity, isBuy)
 }
 
+// 2: Full transaction, 1: Partial transaction, 0: Other
+func isOrderFished(symbol, platform string, orderId int64) int {
+	switch platform {
+	case "binance":
+		order := api.BianOrderQuery(symbol, "", orderId)
+		log.Println(fmt.Sprintf("Order %d current status: %s", orderId, order.Status))
+		// Full transaction returns 2, partial transaction returns 1, other cases return 0
+		if order.Status == models.StatusFilled {
+			return 2
+		} else if order.Status == models.StatusPartiallyFilled {
+			return 1
+		}
+	}
+	return 0
+}
+
 // Low price buy high price selling strategy
 func RunLBHS() {
 	// All currencies with a policy status of 1 are participating in this strategy
 	datas := queryEnabledStrategyLBHS()
 	for _, lbhs := range datas {
-		// TODO Judge whether to withdraw the order and
-		if lbhs.LastOrderId != 0 {
-			// TODO Check the status of the order and set the LastOrderId to 0 when the order is completed
-			completed := false
-			// TODO To cancel the order (restore the last state according to the order was not completed within ten minutes)
-			if completed {
-				continue
-			}
-			lbhs.LastOrderId = 0
-			// TODO update balance?
-		}
 		name := lbhs.CoinName
 		symbol := lbhs.Symbol
 		platform := lbhs.Platform
+
+		// TODO Judge whether to withdraw the order
+		if lbhs.LastOrderId != 0 {
+			// Check the status of the order and set the LastOrderId to 0 when the order is completed
+			orderFinishStatus := isOrderFished(symbol, platform, lbhs.LastOrderId)
+			if orderFinishStatus == 0 {
+				// TODO To cancel the order (restore the last state according to the order was not completed within 10 minutes)
+				continue
+			}
+			if orderFinishStatus == 1 { //
+				// TODO To cancel the order (restore the last state according to the order was not completed within 30 minutes)
+				// TODO cancel ?
+				//continue
+			}
+			lbhs.LastOrderId = 0
+			// TODO update balance ?
+		}
 		side := 0 // 1: sell, 2:buy
 		targetSellPrice := lbhs.TargetSellPrice
 
