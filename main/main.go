@@ -33,8 +33,18 @@ func main() {
 	//otcbtcPrice := api.OtcbtcTrades("btcusdt", "1").Get(0, "price").ToFloat64()
 	//log.Println("otcbtc cur btc price: " + strconv.FormatFloat(otcbtcPrice, 'f', -1, 64))
 	//log.Println(api.BianOrderQuery("XRPUSDT", "", 207779114))
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(":8000", nil)
+
+	//http.HandleFunc("/", hello)
+	//http.ListenAndServe(":8000", nil)
+
+	updateQuantity()
+	updateAccount()
+	updateStrategyLBHS("XRP", "binance")
+	for true {
+		RunLBHS()
+		log.Println("sleep 2 minute...")
+		time.Sleep(time.Duration(2) * time.Minute)
+	}
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -93,8 +103,8 @@ func updateStrategyLBHS(name, platform string) models.StrategyLowBuyHighSell {
 
 func queryEnabledStrategyLBHS() []*models.StrategyLowBuyHighSell {
 	var datas []*models.StrategyLowBuyHighSell
-	num, err := o.QueryTable("strategy_low_buy_high_sell").Filter("enabled", true).All(&datas)
-	fmt.Printf("Returned Rows Num: %d, %s", num, err)
+	num, _ := o.QueryTable("strategy_low_buy_high_sell").Filter("enabled", true).All(&datas)
+	fmt.Printf("%d enabled StrategyLBHSs were found", num)
 	return datas
 }
 
@@ -327,7 +337,7 @@ func RunLBHS() {
 
 		// Get the latest market price
 		curPrice, _ := strconv.ParseFloat(api.BianTrade(symbol, 1)[0].Price, 64)
-		log.Println(fmt.Sprintf("\nCurrent market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f\nNext buy price: %.10f\n", name, curPrice, targetSellPrice, nextSpend, lbhs.TargetBuyPrice))
+		log.Println(fmt.Sprintf("\nCurrent market price of %s: %.10f\nNext sale price: %.10f\nNext spend: %.10f\nNext buy price: %.10f", name, curPrice, targetSellPrice, nextSpend, lbhs.TargetBuyPrice))
 
 		// Determine if it is higher than the specified value？Or is it lower than the specified value?
 		var orderId int64 = 0
@@ -394,8 +404,8 @@ func RunLBHS() {
 		}
 
 		if side == 0 {
-			log.Println("There is no trade")
-			return // continue
+			log.Println("There is no " + symbol + " trade in " + platform + "\n")
+			continue
 		}
 
 		// Set the lastOrderId
