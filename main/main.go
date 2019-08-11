@@ -219,7 +219,13 @@ func orderByQuantity(symbol, platform string, price, quantity float64, isBuy boo
 			return 0, order.Err
 		}
 		log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: success", side, quantity, symbol, price))
-		// TODO Save trade history
+		// Save trade history
+		data := models.OrderHistory{Symbol: order.Symbol, Platform: platform, OrderId: order.OrderID, ClientOrderId: order.ClientOrderID, Time: time.Unix(order.TransactTime, 0)}
+		if created, id, err := o.ReadOrCreate(&data, "Symbol", "Platform", "OrderId", "ClientOrderId", "Time"); err == nil {
+			if created {
+				fmt.Println("New Insert an object. Id:", id)
+			}
+		}
 		return order.OrderID, "Order success"
 	}
 	return 0, "Not supported now"

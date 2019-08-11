@@ -80,3 +80,21 @@ type StrategyLowBuyHighSell struct {
 	CreateTime        time.Time `orm:"auto_now_add;type(datetime)"`
 	UpdateTime        time.Time `orm:"auto_now;type(datetime)"`
 }
+
+type OrderHistory struct {
+	OrderId       int64     `orm:"pk"`
+	Symbol        string    `orm:"size(15)"`
+	ClientOrderId string    `orm:"size(50)"`
+	Price         float64   `orm:"digits(18);decimals(10)"`
+	OrigQty       float64   `orm:"digits(18);decimals(10)"`
+	Status        string    `orm:"size(20)"`
+	TimeInForce   string    `orm:"size(10)"`
+	Type          string    `orm:"size(10)"`
+	Side          string    `orm:"size(10)"`
+	StopPrice     float64   `orm:"digits(18);decimals(10)"`
+	IcebergQty    float64   `orm:"digits(18);decimals(10)"`
+	Time          time.Time `orm:"auto_now_add;type(datetime)"`
+	UpdateTime    time.Time `orm:"auto_now;type(datetime)"`
+	IsWorking     bool      `orm:default(true)`
+	Platform      string    `orm:"size(15)"`
+}
