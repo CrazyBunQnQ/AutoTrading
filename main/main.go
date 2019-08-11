@@ -231,19 +231,30 @@ func orderByUsdt(symbol, platform string, price, usdt float64, isBuy bool) (int6
 }
 
 // 2: Full transaction, 1: Partial transaction, 0: Other
-func isOrderFished(symbol, platform string, orderId int64) int {
+func isOrderFished(symbol, platform string, orderId int64) (int, int64, models.BianOrderSide, float64) {
 	switch platform {
 	case "binance":
 		order := api.BianOrderQuery(symbol, "", orderId)
 		log.Println(fmt.Sprintf("Order %d current status: %s", orderId, order.Status))
+		price, _ := strconv.ParseFloat(order.Price, 64)
+		origQty, _ := strconv.ParseFloat(order.OrigQty, 64)
 		// Full transaction returns 2, partial transaction returns 1, other cases return 0
 		if order.Status == models.StatusFilled {
-			return 2
+			return 2, order.Time, order.Side, price * origQty
 		} else if order.Status == models.StatusPartiallyFilled {
-			return 1
+			return 1, order.Time, order.Side, price * origQty
 		}
 	}
-	return 0
+	return 0, 0, "", 0
+}
+
+func cancelOrder(symbol, platform string, orderId int64) bool {
+	switch platform {
+	case "binance":
+		deletedOrder := api.BianOrderDelete(symbol, "", orderId)
+		return deletedOrder.Status == models.StatusCancelled
+	}
+	return false
 }
 
 // Low price buy high price selling strategy
@@ -255,16 +266,36 @@ func RunLBHS() {
 		symbol := lbhs.Symbol
 		platform := lbhs.Platform
 
-		// TODO Judge whether to withdraw the order
+		// Judge whether to withdraw the order
 		if lbhs.LastOrderId != 0 {
 			// Check the status of the order and set the LastOrderId to 0 when the order is completed
-			orderFinishStatus := isOrderFished(symbol, platform, lbhs.LastOrderId)
-			if orderFinishStatus == 0 {
-				// TODO To cancel the order (restore the last state according to the order was not completed within 10 minutes)
+			orderFinishStatus, createTime, lastSide, dollors := isOrderFished(symbol, platform, lbhs.LastOrderId)
+			spendTime := utils.UnixMillis(time.Now()) - createTime
+			if orderFinishStatus == 0 && spendTime > 1000*5 {
+				// To cancel the order (restore the last state according to the order was not completed within 5 minutes)
+				if cancelOrder(symbol, platform, lbhs.LastOrderId) {
+					if lastSide == models.SideBuy {
+						lbhs.LastSpend = lbhs.LastSpend / lbhs.SpendCoefficient
+						lbhs.Spend = lbhs.Spend - dollors
+						lbhs.ActualCost = lbhs.ActualCost - dollors
+					} else {
+						lbhs.LastSpend = lbhs.LastSpend * lbhs.SpendCoefficient
+						lbhs.Spend = lbhs.Spend + dollors
+						lbhs.ActualCost = lbhs.ActualCost + dollors
+					}
+					lbhs.LastOrderId = 0
+					//update table
+					if _, err := o.Update(&lbhs); err == nil {
+						fmt.Println("restore StrategyLowBuyHighSell:", lbhs.String())
+					}
+					updateQuantity()
+					updateAccount()
+					updateStrategyLBHS(name, platform)
+				}
 				continue
 			}
-			if orderFinishStatus == 1 { //
-				// TODO To cancel the order (restore the last state according to the order was not completed within 30 minutes)
+			if orderFinishStatus == 1 && spendTime > 1000*60 { //
+				// TODO To cancel the order (restore the last state according to the order was not completed within 60 minutes)
 				// TODO cancel ?
 				//continue
 			}
@@ -318,8 +349,26 @@ func RunLBHS() {
 				lbhs.ActualCost = lbhs.ActualCost - getUsdtBySell
 				lbhs.LastSpend = lbhs.LastSpend / lbhs.SpendCoefficient
 			} else {
-				// TODO The balance is sufficient, and the sales quota is adjusted according to the average market price.
-
+				// FIXME The balance is sufficient, and the sales quota is adjusted according to the average market price.
+				getUsdtBySell := lbhs.LastSpend
+				targetSellQuantity := getUsdtBySell * curPrice
+				if coinQuantity.Free > targetSellQuantity {
+					// Sell targetSellQuantity coins
+					orderId, _ = orderByQuantity(symbol, platform, curPrice, targetSellQuantity, false)
+					if orderId == 0 { // fail
+						continue
+					}
+				} else {
+					getUsdtBySell = coinQuantity.Free * curPrice
+					// Sell all free coins
+					orderId, _ = orderByQuantity(symbol, platform, curPrice, coinQuantity.Free, false)
+					if orderId == 0 { // fail
+						continue
+					}
+				}
+				//update spend and actual cost
+				lbhs.ActualCost = lbhs.ActualCost - getUsdtBySell
+				lbhs.LastSpend = lbhs.LastSpend / lbhs.SpendCoefficient
 			}
 		} else if curPrice < lbhs.TargetBuyPrice {
 			if usdtQuantity.Free > nextSpend {
@@ -338,16 +387,17 @@ func RunLBHS() {
 			}
 		}
 
-		// Set the lastOrderId
-		lbhs.LastOrderId = orderId
-
 		if side == 0 {
 			log.Println("There is no trade")
 			return // continue
 		}
 
+		// Set the lastOrderId
+		lbhs.LastOrderId = orderId
+
 		// Check the actual balance of the account after the transaction
 		updateQuantity()
+		updateAccount()
 		//usdtQuantity = queryQuantity("USDT", platform)
 		coinQuantity = queryQuantity(name, platform)
 
@@ -364,9 +414,9 @@ func RunLBHS() {
 
 		log.Println(lbhs.String())
 		// update table
-		//if _, err := o.Update(&lbhs); err == nil {
-		//	fmt.Println("Update StrategyLowBuyHighSell:", lbhs.String())
-		//}
+		if _, err := o.Update(&lbhs); err == nil {
+			fmt.Println("Update StrategyLowBuyHighSell:", lbhs.String())
+		}
+		updateStrategyLBHS(name, platform)
 	}
-
 }
