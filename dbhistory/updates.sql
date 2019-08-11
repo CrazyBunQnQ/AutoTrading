@@ -78,3 +78,23 @@ create table autotrade.strategy_low_buy_high_sell
         unique (symbol, platform)
 );
 
+create table `order`
+(
+    order_id        int                                                                   not null,
+    symbol          varchar(15)                                                           not null,
+    client_order_id varchar(50)                                                           null,
+    price           decimal(18, 10) default 0                                             not null,
+    orig_qty        decimal(18, 10) default 0                                             null,
+    status          varchar(20)                                                           null,
+    time_in_force   varchar(10)                                                           null,
+    type            varchar(10)                                                           null,
+    side            varchar(10)                                                           not null,
+    stop_price      decimal(18, 10)                                                       null,
+    iceberg_qty     decimal(18, 10)                                                       null,
+    time            datetime        default current_timestamp                             not null comment 'create time',
+    update_time     datetime        default current_timestamp on update current_timestamp not null,
+    is_working      tinyint         default true                                          not null,
+    platform        varchar(15)                                                           not null,
+    constraint order_pk
+        primary key (order_id)
+);
