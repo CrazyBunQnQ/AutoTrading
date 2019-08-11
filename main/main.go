@@ -281,11 +281,11 @@ func RunLBHS() {
 		notEnough := usdtQuantity.Free < nextSpend
 
 		if usdtQuantity.Free < nextSpend && usdtQuantity.Free >= nextSpend/2 {
-			targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 2
+			targetSellPrice = lbhs.PositionAverage * (1 + (lbhs.TargetProfitPoint-1)/2)
 		} else if usdtQuantity.Free < nextSpend/2 && usdtQuantity.Free >= nextSpend/3 {
-			targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 3
+			targetSellPrice = lbhs.PositionAverage * (1 + (lbhs.TargetProfitPoint-1)/3)
 		} else if usdtQuantity.Free < nextSpend/3 {
-			targetSellPrice = lbhs.PositionAverage * lbhs.TargetProfitPoint / 4
+			targetSellPrice = lbhs.PositionAverage * (1 + (lbhs.TargetProfitPoint-1)/4)
 		}
 
 		// Get the latest market price
