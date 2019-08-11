@@ -1,0 +1,5 @@
+INSERT INTO autotrade.quantity (id, name, platform, free, locked, create_time, update_time) VALUES (1, 'BTC', 'binance', 0.0000000000, 0.0081000000, '2019-07-22 16:32:04', '2019-07-24 16:18:23');
+INSERT INTO autotrade.quantity (id, name, platform, free, locked, create_time, update_time) VALUES (2, 'BNB', 'binance', 0.6717201700, 0.0000000000, '2019-07-22 16:32:04', '2019-08-11 14:34:14');
+INSERT INTO autotrade.quantity (id, name, platform, free, locked, create_time, update_time) VALUES (3, 'EOS', 'binance', 34.3790000000, 74.8600000000, '2019-07-22 16:32:04', '2019-08-11 14:34:14');
+INSERT INTO autotrade.quantity (id, name, platform, free, locked, create_time, update_time) VALUES (4, 'USDT', 'binance', 296.3501894700, 68.3808000000, '2019-07-22 16:32:04', '2019-08-11 14:34:14');
+INSERT INTO autotrade.quantity (id, name, platform, free, locked, create_time, update_time) VALUES (5, 'XRP', 'binance', 628.2000000000, 746.5000000000, '2019-07-22 16:32:04', '2019-08-11 14:34:14');
