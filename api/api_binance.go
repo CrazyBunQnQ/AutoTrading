@@ -309,7 +309,13 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	strRequestUrl := "/api/v3/order"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
-	jsonReturn := utils.BianPostRequest(strUrl, mapParams, true)
+	jsonReturn, err := utils.BianPostRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
 	json.Unmarshal([]byte(jsonReturn), &result)
 
 	return result
@@ -332,6 +338,57 @@ func BianOrderQuery(symbol, origClientOrderId string, orderId int64) models.Bian
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn, err := utils.BianGetRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
+
+	return result
+}
+
+func BianOpenOrder(symbol string) []models.BianOrderStatus {
+	result := []models.BianOrderStatus{}
+
+	mapParams := make(map[string]string)
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+	mapParams["recvWindow"] = strconv.FormatInt(recvWindow(5*time.Second), 10)
+	if symbol != "" {
+		mapParams["symbol"] = symbol
+	}
+
+	strRequestUrl := "/api/v3/openOrders"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn, err := utils.BianGetRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
+
+	return result
+}
+
+func BianOrderDelete(symbol, origClientOrderId string, orderId int64) models.BianOrderStatus {
+	result := models.BianOrderStatus{}
+
+	mapParams := make(map[string]string)
+	mapParams["symbol"] = symbol
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+	if origClientOrderId != "" {
+		mapParams["origClientOrderId"] = origClientOrderId
+	}
+	if orderId != 0 {
+		mapParams["orderId"] = strconv.FormatInt(orderId, 10)
+	}
+
+	strRequestUrl := "/api/v3/order"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn, err := utils.BianDeleteRequest(strUrl, mapParams, true)
 	if err != "" {
 		errJson := "{\"err\": \"" + err + "\"}"
 		json.Unmarshal([]byte(errJson), &result)
