@@ -1,6 +1,8 @@
 package main
 
 import (
+	"AutoTrading/api"
+	"log"
 	"testing"
 )
 
@@ -32,10 +34,13 @@ func TestDepth(t *testing.T) {
 
 	// orderid: 207779114
 	//log.Println(api.BianOrderByLimit("XRPUSDT", models.SideSell, models.GTC, 50, 0.4, 0))
+	//log.Println(api.BianOpenOrder("XRPUSDT"))
+	log.Println(api.BianOrderDelete("XRPUSDT", "", 208623709))
+	log.Println(api.BianOpenOrder("XRPUSDT"))
 	//log.Println(api.BianOrderQuery("XRPUSDT", "", 207779114))
 	updateQuantity()
 	updateAccount()
 	queryStrategyLBHS("XRPUSDT", "binance")
 	updateStrategyLBHS("XRP", "binance")
-	RunLBHS()
+	//RunLBHS()
 }
