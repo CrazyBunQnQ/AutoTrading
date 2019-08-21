@@ -26,3 +26,4 @@
 !/main/api_test.go
 !/out/Dockerfile
 /out/
+!/main/thread_test.go

@@ -89,7 +89,7 @@ func HuobiDepth(strSymbol, strType string) models.HuobiDepthReturn {
 // Get transaction details
 // strSymbol: Transaction pair, btcusdt, bccbtc......
 // return: TradeDetailReturn Object
-func GetTradeDetail(strSymbol string) models.TradeDetailReturn {
+func HuobiLastPrice(strSymbol string) models.TradeDetailReturn {
 	tradeDetailReturn := models.TradeDetailReturn{}
 
 	mapParams := make(map[string]string)
