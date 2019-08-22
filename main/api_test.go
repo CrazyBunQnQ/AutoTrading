@@ -1,12 +1,16 @@
 package main
 
 import (
+	"AutoTrading/api"
+	"log"
 	"testing"
 )
 
 func TestDepth(t *testing.T) {
-	//log.Println(api.BianLastPrice("BTCUSDT"))
+	log.Println(api.BianLastPrice("BTCUSDT"))
 	//log.Println(api.BianLastAllPrice())
+	huobiPrice := api.HuobiLastPrice("btcusdt")
+	log.Println(huobiPrice)
 
 	//log.Println(api.BianBestTicker("XRPUSDT"))
 	//log.Println(api.BianAllBestTicker())
@@ -37,8 +41,8 @@ func TestDepth(t *testing.T) {
 	//log.Println(api.BianOpenOrder("XRPUSDT"))
 	//log.Println(api.BianOrderQuery("XRPUSDT", "", 207779114))
 	//queryStrategyLBHS("XRPUSDT", "binance")
-	updateQuantity()
-	updateAccount()
-	updateStrategyLBHS("XRP", "binance")
-	RunLBHS()
+	//updateQuantity()
+	//updateAccount()
+	//updateStrategyLBHS("XRP", "binance")
+	//RunLBHS()
 }

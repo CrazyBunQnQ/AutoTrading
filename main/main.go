@@ -38,13 +38,13 @@ func main() {
 	//http.ListenAndServe(":8000", nil)
 
 	updateQuantity()
-	updateAccount()
-	updateStrategyLBHS("XRP", "binance")
-	for true {
-		RunLBHS()
-		log.Println("sleep 2 minute...")
-		time.Sleep(time.Duration(2) * time.Minute)
-	}
+	//updateAccount()
+	//updateStrategyLBHS("XRP", "binance")
+	//for true {
+	//	RunLBHS()
+	//	log.Println("sleep 2 minute...")
+	//	time.Sleep(time.Duration(2) * time.Minute)
+	//}
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
