@@ -1,27 +1,41 @@
-package main
+package strategy
 
 import (
 	"AutoTrading/api"
+	"AutoTrading/config"
 	"AutoTrading/utils"
+	"fmt"
 	"log"
 	"math"
 	"strconv"
+	"strings"
 	"sync"
-	"testing"
 	"time"
 )
 
 var getPriceThread = sync.WaitGroup{}
-var bianPrice, huobiPrice, diffPrice float64
+var bianPrice, huobiPrice float64
 
-func TestThread(t *testing.T) {
+func RunPlatformDiffStrategy() {
+	symbol := "BTCUSDT"
+	symbolUpper := strings.ToUpper(symbol)
+	symbolLowwer := strings.ToLower(symbol)
 	getPriceThread.Add(1)
-	go getBianLastPrice("BTCUSDT")
+	go getHuobiLastPrice(symbolLowwer)
 	getPriceThread.Add(1)
-	go getHuobiLastPrice("btcusdt")
+	go getBianLastPrice(symbolUpper)
 
 	getPriceThread.Wait()
-	log.Println(getDiffPrice(bianPrice, huobiPrice))
+	diffPrice, gtA := getDiffPrice(huobiPrice, bianPrice)
+	if diffPrice >= config.PlatformDiff.BTC {
+		//log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: %s", side, quantity, symbol, price, order.Err))
+		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", diffPrice, gtA))
+		if gtA {
+
+		} else {
+
+		}
+	}
 }
 
 func getBianLastPrice(symbol string) float64 {
@@ -40,6 +54,6 @@ func getHuobiLastPrice(symbol string) float64 {
 	return huobiPrice
 }
 
-func getDiffPrice(a, b float64) float64 {
-	return math.Abs(a - b)
+func getDiffPrice(a, b float64) (float64, bool) {
+	return math.Abs(a - b), a > b
 }
