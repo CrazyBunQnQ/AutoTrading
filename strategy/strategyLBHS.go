@@ -2,6 +2,7 @@ package strategy
 
 import (
 	"AutoTrading/api"
+	"AutoTrading/config"
 	"AutoTrading/models"
 	"AutoTrading/utils"
 	"fmt"
@@ -15,7 +16,7 @@ var o orm.Ormer
 var baseCoin = "USDT"
 
 func init() {
-	orm.RegisterDataBase("default", "mysql", "root:zy26T$b7V8i3g4mW@tcp(127.0.0.1:3306)/autotrade?charset=utf8mb4", 30)
+	orm.RegisterDataBase("default", "mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4", config.DBConf.UserName, config.DBConf.Password, config.DBConf.Addr, config.DBConf.Port, config.DBConf.Schema), 30)
 	orm.RegisterModel(new(models.StrategyLowBuyHighSell))
 	orm.RegisterModel(new(models.Account))
 	orm.RegisterModel(new(models.Quantity))
