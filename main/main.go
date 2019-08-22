@@ -1,6 +1,7 @@
 package main
 
 import (
+	"AutoTrading/strategy"
 	"io"
 	"net/http"
 )
@@ -12,4 +13,6 @@ func main() {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "hello world\n")
+
+	strategy.RunPlatformDiffStrategy()
 }

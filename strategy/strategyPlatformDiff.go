@@ -28,7 +28,6 @@ func RunPlatformDiffStrategy() {
 	getPriceThread.Wait()
 	diffPrice, gtA := getDiffPrice(huobiPrice, bianPrice)
 	if diffPrice >= config.PlatformDiff.BTC {
-		//log.Println(fmt.Sprintf("\nOrder at Binance: %s %.10f %s at the price of %.10f\nresult: %s", side, quantity, symbol, price, order.Err))
 		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", diffPrice, gtA))
 		if gtA {
 
@@ -38,19 +37,24 @@ func RunPlatformDiffStrategy() {
 	}
 }
 
+// TODO Platforms with low balances sell more
+// TODO Send alerts when there is a serious imbalance
+
 func getBianLastPrice(symbol string) float64 {
-	log.Println(strconv.FormatInt(utils.UnixMillis(time.Now()), 10) + " bian")
+	startTime := utils.UnixMillis(time.Now())
 	defer getPriceThread.Done()
 	bianPrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
-	log.Println(strconv.FormatInt(utils.UnixMillis(time.Now()), 10) + " bian : " + strconv.FormatFloat(bianPrice, 'f', -1, 64))
+	costTime := utils.UnixMillis(time.Now()) - startTime
+	log.Println(fmt.Sprintf("The last %s price in Bian : %.10f, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
 	return bianPrice
 }
 
 func getHuobiLastPrice(symbol string) float64 {
-	log.Println(strconv.FormatInt(utils.UnixMillis(time.Now()), 10) + " huobi")
+	startTime := utils.UnixMillis(time.Now())
 	defer getPriceThread.Done()
 	huobiPrice = api.HuobiLastPrice(symbol).Tick.Data[0].Price
-	log.Println(strconv.FormatInt(utils.UnixMillis(time.Now()), 10) + " huobi: " + strconv.FormatFloat(huobiPrice, 'f', -1, 64))
+	costTime := utils.UnixMillis(time.Now()) - startTime
+	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
 	return huobiPrice
 }
 
