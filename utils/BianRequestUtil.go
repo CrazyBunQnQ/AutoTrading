@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 func BianGetRequest(strUrl string, params map[string]string, sign bool) (string, string) {
@@ -64,8 +63,4 @@ func BianSign(keyByte, queryEncodeByte []byte) string {
 	mac := hmac.New(sha256.New, keyByte)
 	mac.Write(queryEncodeByte)
 	return hex.EncodeToString(mac.Sum(nil))
-}
-
-func UnixMillis(t time.Time) int64 {
-	return t.UnixNano() / int64(time.Millisecond)
 }

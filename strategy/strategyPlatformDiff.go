@@ -3,8 +3,10 @@ package strategy
 import (
 	"AutoTrading/api"
 	"AutoTrading/config"
+	"AutoTrading/models"
 	"AutoTrading/utils"
 	"fmt"
+	"github.com/gorilla/websocket"
 	"log"
 	"math"
 	"strconv"
@@ -26,15 +28,27 @@ func RunPlatformDiffStrategy() {
 	go getBianLastPrice(symbolUpper)
 
 	getPriceThread.Wait()
-	diffPrice, gtA := getDiffPrice(huobiPrice, bianPrice)
+	diffPrice, AgtB := getDiffPrice(huobiPrice, bianPrice)
 	if diffPrice >= config.PlatformDiff.BTC {
-		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", diffPrice, gtA))
-		if gtA {
+		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", diffPrice, AgtB))
+		if AgtB {
 
 		} else {
 
 		}
 	}
+}
+
+// binance-exchange/go-binance/service_websocket.go
+func DepthWebsocket(symbol string) (chan *models.DepthEvent, chan struct{}, error) {
+	url := fmt.Sprintf("wss://stream.binance.com:9443/ws/%s@depth", symbol)
+	_, _, err := websocket.DefaultDialer.Dial(url, nil)
+	if err != nil {
+		log.Fatal("dial:", err)
+	}
+	done := make(chan struct{})
+
+	return nil, done, nil
 }
 
 // TODO Platforms with low balances sell more
