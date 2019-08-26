@@ -7,6 +7,7 @@ import (
 	"AutoTrading/utils"
 	"fmt"
 	"github.com/astaxie/beego/orm"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
 	"time"
