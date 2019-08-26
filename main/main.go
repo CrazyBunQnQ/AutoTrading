@@ -11,10 +11,7 @@ func main() {
 	//http.HandleFunc("/", start)
 	//http.HandleFunc("/", stop)
 	//http.ListenAndServe(":8000", nil)
-	for true {
-		time.Sleep(time.Duration(5) * time.Second)
-		strategy.RunPlatformDiffStrategy()
-	}
+	platformDiff()
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
@@ -23,4 +20,11 @@ func start(w http.ResponseWriter, r *http.Request) {
 
 func stop(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "stop\n")
+}
+
+func platformDiff() {
+	for true {
+		strategy.RunPlatformDiffStrategy()
+		time.Sleep(time.Duration(3) * time.Second)
+	}
 }

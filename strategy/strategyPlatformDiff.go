@@ -22,15 +22,18 @@ func RunPlatformDiffStrategy() {
 	symbol := "BTCUSDT"
 	symbolUpper := strings.ToUpper(symbol)
 	symbolLowwer := strings.ToLower(symbol)
+	// TODO Query the current balance of each platform account
 	getPriceThread.Add(1)
 	go getHuobiLastPrice(symbolLowwer)
 	getPriceThread.Add(1)
 	go getBianLastPrice(symbolUpper)
 
 	getPriceThread.Wait()
-	diffPrice, AgtB := getDiffPrice(huobiPrice, bianPrice)
-	if diffPrice >= config.PlatformDiff.BTC {
-		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", diffPrice, AgtB))
+	currDiffPrice, AgtB := getDiffPrice(huobiPrice, bianPrice)
+	// TODO When the platform funds are seriously unbalanced, the threshold transfer funds will be lowered according to the situation.
+	targetDiffPrice := huobiPrice * config.PlatformDiff
+	if bianPrice != 0 && huobiPrice != 0 && currDiffPrice >= targetDiffPrice {
+		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, AgtB))
 		if AgtB {
 
 		} else {

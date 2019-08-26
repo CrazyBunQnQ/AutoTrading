@@ -33,10 +33,6 @@ huobi:
 otcbtc:
   baseurl: https://bb.otcbtc.com
 
-platform_diff:
-  btc: 2.5
-  eth: 0.1
-  eos: 0.01
-  xrp: 0.001
+platform_diff: 0.0009
 
 version: 1.0
