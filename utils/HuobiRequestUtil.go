@@ -19,13 +19,14 @@ func ApiKeyGet(mapParams map[string]string, strRequestPath string) (string, stri
 	strMethod := "GET"
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
-	mapParams["AccessKeyId"] = config.HuoBiConf.AccessKeyPublic
+	mapParams["AccessKeyId"] = config.HuoBiConf.AccessKeyPrivate
 	mapParams["SignatureMethod"] = "HmacSHA256"
 	mapParams["SignatureVersion"] = "2"
 	mapParams["Timestamp"] = timestamp
 
-	hostName := config.HuoBiConf.HostName
-	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPublic)
+	//hostName := config.HuoBiConf.HostName
+	hostName := config.HuoBiConf.MarketUrl
+	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.HuoBiConf.AccessKeyPrivate)
 
 	if config.HuoBiConf.EnablePrivateSignature == true {
 		privateSignature, err := CreatePrivateSignByJWT(mapParams["Signature"])
@@ -36,7 +37,7 @@ func ApiKeyGet(mapParams map[string]string, strRequestPath string) (string, stri
 		}
 	}
 
-	strUrl := config.HuoBiConf.TradeUrl + strRequestPath
+	strUrl := config.HuoBiConf.MarketUrl + strRequestPath
 
 	return HttpGetRequest(strUrl, MapValueEncodeURI(mapParams))
 }
@@ -50,14 +51,14 @@ func ApiKeyPost(mapParams map[string]string, strRequestPath string) string {
 	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05")
 
 	mapParams2Sign := make(map[string]string)
-	mapParams2Sign["AccessKeyId"] = config.HuoBiConf.AccessKeyPublic
+	mapParams2Sign["AccessKeyId"] = config.HuoBiConf.AccessKeyPrivate
 	mapParams2Sign["SignatureMethod"] = "HmacSHA256"
 	mapParams2Sign["SignatureVersion"] = "2"
 	mapParams2Sign["Timestamp"] = timestamp
 
-	hostName := config.HuoBiConf.HostName
+	hostName := config.HuoBiConf.MarketUrl
 
-	mapParams2Sign["Signature"] = CreateSign(mapParams2Sign, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPublic)
+	mapParams2Sign["Signature"] = CreateSign(mapParams2Sign, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPrivate)
 
 	if config.HuoBiConf.EnablePrivateSignature == true {
 		privateSignature, err := CreatePrivateSignByJWT(mapParams2Sign["Signature"])
@@ -69,7 +70,7 @@ func ApiKeyPost(mapParams map[string]string, strRequestPath string) string {
 		}
 	}
 
-	strUrl := config.HuoBiConf.TradeUrl + strRequestPath + "?" + Map2UrlQuery(MapValueEncodeURI(mapParams2Sign))
+	strUrl := config.HuoBiConf.MarketUrl + strRequestPath + "?" + Map2UrlQuery(MapValueEncodeURI(mapParams2Sign))
 
 	return HttpPostRequest(strUrl, mapParams)
 }
