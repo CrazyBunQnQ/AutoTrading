@@ -1,6 +1,10 @@
 package utils
 
 import (
+	"AutoTrading/config"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -45,22 +49,6 @@ func HttpGetRequest(strUrl string, mapParams map[string]string) (string, string)
 	return string(body), ""
 }
 
-// 将map格式的请求参数转换为字符串格式的
-// mapParams: map格式的参数键值对
-// return: 查询字符串
-func Map2UrlQuery(mapParams map[string]string) string {
-	var strParams string
-	for key, value := range mapParams {
-		strParams += (key + "=" + value + "&")
-	}
-
-	if 0 < len(strParams) {
-		strParams = string([]rune(strParams)[:len(strParams)-1])
-	}
-
-	return strParams
-}
-
 // Http POST请求基础函数, 通过封装Go语言Http请求, 支持火币网REST API的HTTP POST请求
 // strUrl: 请求的URL
 // mapParams: map类型的请求参数
@@ -94,4 +82,76 @@ func HttpPostRequest(strUrl string, mapParams map[string]string) string {
 	}
 
 	return string(body)
+}
+
+func BianGetRequest(strUrl string, params map[string]string, sign bool) (string, string) {
+	return BianRequest("GET", strUrl, params, sign)
+}
+
+func BianPostRequest(strUrl string, params map[string]string, sign bool) (string, string) {
+	return BianRequest("POST", strUrl, params, sign)
+}
+
+func BianDeleteRequest(strUrl string, params map[string]string, sign bool) (string, string) {
+	return BianRequest("DELETE", strUrl, params, sign)
+}
+
+func BianRequest(requestType, strUrl string, params map[string]string, sign bool) (string, string) {
+	httpClient := &http.Client{}
+
+	request, err := http.NewRequest(requestType, strUrl, nil)
+	if nil != err {
+		return "", "创建 " + requestType + " 请求失败: " + err.Error()
+	}
+
+	q := request.URL.Query()
+	for key, val := range params {
+		q.Add(key, val)
+	}
+	if sign {
+		q.Add("signature", BianSign([]byte(config.BianConf.SecretKeyPrivate), []byte(q.Encode())))
+	}
+
+	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36")
+	request.Header.Add("Content-Type", "application/json")
+	request.Header.Add("Accept-Language", "zh-cn")
+	request.Header.Add("X-MBX-APIKEY", config.BianConf.ApiKeyPrivate)
+
+	request.URL.RawQuery = q.Encode()
+
+	response, err := httpClient.Do(request)
+	defer response.Body.Close()
+	if nil != err {
+		return "", requestType + " 请求失败: " + err.Error()
+	}
+
+	body, err := ioutil.ReadAll(response.Body)
+	if nil != err {
+		return "", "读取相应内容失败: " + err.Error()
+	}
+
+	return string(body), ""
+}
+
+// Sign signs provided payload and returns encoded string sum.
+func BianSign(keyByte, queryEncodeByte []byte) string {
+	mac := hmac.New(sha256.New, keyByte)
+	mac.Write(queryEncodeByte)
+	return hex.EncodeToString(mac.Sum(nil))
+}
+
+// 将map格式的请求参数转换为字符串格式的
+// mapParams: map格式的参数键值对
+// return: 查询字符串
+func Map2UrlQuery(mapParams map[string]string) string {
+	var strParams string
+	for key, value := range mapParams {
+		strParams += (key + "=" + value + "&")
+	}
+
+	if 0 < len(strParams) {
+		strParams = string([]rune(strParams)[:len(strParams)-1])
+	}
+
+	return strParams
 }
