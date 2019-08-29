@@ -151,9 +151,8 @@ func ApiKeyGet(mapParams map[string]string, strRequestPath string) (string, stri
 	mapParams["SignatureVersion"] = "2"
 	mapParams["Timestamp"] = timestamp
 
-	//hostName := config.HuoBiConf.HostName
-	hostName := config.HuoBiConf.MarketUrl
-	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.HuoBiConf.AccessKeyPrivate)
+	hostName := config.HuoBiConf.HostName
+	mapParams["Signature"] = CreateSign(mapParams, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPrivate)
 
 	if config.HuoBiConf.EnablePrivateSignature == true {
 		privateSignature, err := CreatePrivateSignByJWT(mapParams["Signature"])

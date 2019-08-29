@@ -16,7 +16,7 @@ binance:
 huobi:
   market_url: https://api.huobi.pro
   trade_url: trade_url
-  host_name: host_name
+  host_name: api.huobi.pro
 
   access_key_private: access_key_private
   secret_key_private: secret_key_private
