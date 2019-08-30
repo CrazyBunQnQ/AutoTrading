@@ -1,0 +1,2 @@
+INSERT INTO autotrade.platform (id, name, name_cn, create_time, update_time) VALUES (1, 'binance', '币安', '2019-08-29 12:57:46', '2019-08-29 12:57:46');
+INSERT INTO autotrade.platform (id, name, name_cn, create_time, update_time) VALUES (2, 'huobi', '火币', '2019-08-29 12:57:59', '2019-08-29 12:57:59');
