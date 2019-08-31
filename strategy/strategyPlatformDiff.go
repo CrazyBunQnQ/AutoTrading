@@ -38,7 +38,13 @@ func RunPlatformDiffStrategy() {
 	if bianPrice != 0 && huobiPrice != 0 && currDiffPrice >= targetDiffPrice {
 		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, AgtB))
 		if AgtB {
-
+			// TODO sell huobi, buy bian
+			// Trading on both platforms when the transaction is successfully completed
+			if huobiAccount.Btc*bianPrice > bianAccount.Usdt {
+				// todo huobi sell bianAccount.Usdt/huobiPrice, bian buy bianAccount.Usdt,
+			} else {
+				// todo huobi sell huobiAccount.Btc, bian buy huobiAccount.btc*bianPrice
+			}
 		} else {
 
 		}
