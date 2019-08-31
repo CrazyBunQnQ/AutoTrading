@@ -27,3 +27,5 @@
 !/out/Dockerfile
 /out/
 !/main/thread_test.go
+/config/asset.go
+!/main/thread_test.go

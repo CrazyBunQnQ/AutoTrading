@@ -7,13 +7,14 @@ import (
 )
 
 type conf struct {
-	Database     database     `yaml:"database"`
-	Binance      binance      `yaml:"binance"`
-	Huobi        huobi        `yaml:"huobi"`
-	Okex         okex         `yaml:"okex"`
-	Otcbtc       otcbtc       `yaml:"otcbtc"`
-	PlatformDiff platformDiff `yaml:"platform_diff"`
-	Version      string       `yaml:"version"`
+	Database       database `yaml:"database"`
+	Binance        binance  `yaml:"binance"`
+	Huobi          huobi    `yaml:"huobi"`
+	Okex           okex     `yaml:"okex"`
+	Otcbtc         otcbtc   `yaml:"otcbtc"`
+	PlatformDiff   float64  `yaml:"platform_diff"`
+	AmountPerTrade float64  `yaml:"amount_per_trade"`
+	Version        string   `yaml:"version"`
 }
 
 type database struct {
@@ -52,13 +53,6 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
-type platformDiff struct {
-	BTC float64 `yaml:"btc"`
-	ETH float64 `yaml:"eth"`
-	EOS float64 `yaml:"eos"`
-	XRP float64 `yaml:"xrp"`
-}
-
 const configFile = "resources/config_private.yaml"
 
 var DBConf database
@@ -66,7 +60,9 @@ var BianConf binance
 var HuoBiConf huobi
 var OkexConf okex
 var OtcbtcConf otcbtc
-var PlatformDiff platformDiff
+var PlatformDiff float64
+var AmountPerTrade float64
+var Version string
 
 func init() {
 	yamlFile, _ := Asset(configFile)
@@ -86,4 +82,6 @@ func init() {
 	OkexConf = c.Okex
 	OtcbtcConf = c.Otcbtc
 	PlatformDiff = c.PlatformDiff
+	AmountPerTrade = c.AmountPerTrade
+	Version = c.Version
 }

@@ -7,6 +7,7 @@ import (
 	"AutoTrading/utils"
 	"fmt"
 	"github.com/astaxie/beego/orm"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"strconv"
 	"time"
@@ -150,11 +151,11 @@ func updateQuantity() {
 
 func updateAccount() models.Account {
 	bianAccount := api.BianAccountInfo()
-	account := models.Account{Platform: "binance"}
 	if bianAccount.Err != "" {
 		log.Println("请求失败")
-		return account
+		return models.Account{Platform: "binance"}
 	}
+	account := models.Account{Platform: "binance"}
 	if created, id, err := o.ReadOrCreate(&account, "Platform"); err == nil {
 		if created {
 			fmt.Println("New Insert an object. Id:", id)

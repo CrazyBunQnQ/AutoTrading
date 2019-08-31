@@ -4,15 +4,27 @@ import (
 	"AutoTrading/strategy"
 	"io"
 	"net/http"
+	"time"
 )
 
 func main() {
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(":8000", nil)
+	//http.HandleFunc("/", start)
+	//http.HandleFunc("/", stop)
+	//http.ListenAndServe(":8000", nil)
+	platformDiff()
 }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "hello world\n")
+func start(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "start\n")
+}
 
-	strategy.RunPlatformDiffStrategy()
+func stop(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "stop\n")
+}
+
+func platformDiff() {
+	for true {
+		strategy.RunPlatformDiffStrategy()
+		time.Sleep(time.Duration(3) * time.Second)
+	}
 }
