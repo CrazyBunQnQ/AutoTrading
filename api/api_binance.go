@@ -321,6 +321,36 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	return result
 }
 
+func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebergQty float64) models.BianFastestOrder {
+	result := models.BianFastestOrder{}
+
+	mapParams := make(map[string]string)
+	mapParams["type"] = string(models.TypeMarket)
+	// fastest response type
+	mapParams["newOrderRespType"] = string(models.AckResponse)
+	mapParams["symbol"] = symbol
+	mapParams["side"] = string(side)
+	mapParams["quantity"] = strconv.FormatFloat(quantity, 'f', -1, 64)
+	mapParams["timestamp"] = strconv.FormatInt(utils.UnixMillis(time.Now()), 10)
+	if icebergQty != 0 {
+		mapParams["icebergQty"] = strconv.FormatFloat(icebergQty, 'f', -1, 64)
+	}
+
+	strRequestUrl := "/api/v3/order/"
+	strUrl := config.BianConf.BaseUrl + strRequestUrl
+
+	jsonReturn, err := utils.BianPostRequest(strUrl, mapParams, true)
+	if err != "" {
+		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else {
+		json.Unmarshal([]byte(jsonReturn), &result)
+	}
+	json.Unmarshal([]byte(jsonReturn), &result)
+
+	return result
+}
+
 func BianOrderQuery(symbol, origClientOrderId string, orderId int64) models.BianOrderStatus {
 	result := models.BianOrderStatus{}
 
