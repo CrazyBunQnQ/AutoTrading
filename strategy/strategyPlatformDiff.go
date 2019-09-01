@@ -36,59 +36,83 @@ func RunPlatformDiffStrategy() {
 
 	currDiffPrice, huobiIsGreaterThanBian := getDiffPrice(huobiPrice, bianPrice)
 	// TODO When the platform funds are seriously unbalanced, the threshold transfer funds will be lowered according to the situation.
-	targetDiffPrice := huobiPrice * config.PlatformDiff
-	if bianPrice != 0 && huobiPrice != 0 && currDiffPrice >= targetDiffPrice {
-		log.Println(fmt.Sprintf("diff price is %.10f, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, huobiIsGreaterThanBian))
+	targetDiffPrice := huobiPrice * config.PlatformDiffPoint
+	targetBalancedDiffPrice := huobiPrice * config.PlatformBalancedPoint
+	if bianPrice == 0 {
+		log.Println("未获取到 Binance 的最新价格信息")
+		return
+	}
+	if huobiPrice == 0 {
+		log.Println("未获取到 Huobi 的最新价格信息")
+		return
+	}
+	if currDiffPrice >= targetDiffPrice {
+		log.Println(fmt.Sprintf("Diff price is %.10f USD, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, huobiIsGreaterThanBian))
 		// base bian, 币安买卖都是数量, 火币买入用交易额，卖出用数量
 		if huobiIsGreaterThanBian {
-			// TODO sell huobi, buy bian
+			// sell huobi, buy bian
 			// Trading on both platforms when the transaction is successfully completed
 			if huobiAccount.Btc*bianPrice > bianAccount.Usdt {
 				// todo huobi sell bianAccount.Usdt/huobiPrice, bian buy bianAccount.Usdt
-				huobiSellCount := bianAccount.Usdt / huobiPrice
-				bianBuyCount := bianAccount.Usdt / bianPrice
-				// TODO Trading when the transaction amount is less than 15 USD
+				huobiSellBtcCount := bianAccount.Usdt / huobiPrice
+				bianBuyBtcCount := bianAccount.Usdt / bianPrice
+				// Trading when the transaction amount is less than 15 USD
 				if bianAccount.Usdt < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("Sell ​%.10f BTC on the Huobi\nBuy %.10f BTC on the Binance", huobiSellCount, bianBuyCount))
-				tradeTest(huobiSellCount, bianBuyCount, huobiIsGreaterThanBian)
+				log.Println(fmt.Sprintf("Trade start...\nSell ​%.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", huobiSellBtcCount, bianBuyBtcCount))
+				tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 			} else {
 				// todo huobi sell huobiAccount.Btc, bian buy huobiAccount.btc*bianPrice
-				huobiSellCount := huobiAccount.Btc
-				bianBuyCount := huobiAccount.Btc
+				huobiSellBtcCount := huobiAccount.Btc
+				bianBuyBtcCount := huobiAccount.Btc
 				if huobiAccount.Btc*bianPrice < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				// TODO Trading when the transaction amount is less than 15 USD
-				log.Println(fmt.Sprintf("Sell ​%.10f BTC on the Huobi\nBuy %.10f BTC on the Binance", huobiSellCount, bianBuyCount))
-				tradeTest(huobiSellCount, bianBuyCount, huobiIsGreaterThanBian)
+				// Trading when the transaction amount is less than 15 USD
+				log.Println(fmt.Sprintf("Trade start...\nSell ​%.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", huobiSellBtcCount, bianBuyBtcCount))
+				tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 			}
 		} else {
-			// TODO buy huobi, sell bian
+			// buy huobi, sell bian
 			if huobiAccount.Usdt < bianAccount.Btc*huobiPrice {
 				// todo huobi buy huobiAccount.Usdt, bian sell huobiAccount.Usdt/bianPrice
 				huobiBuy := huobiAccount.Usdt
-				bianSellCount := huobiAccount.Usdt / bianPrice
+				bianSellBtcCount := huobiAccount.Usdt / bianPrice
 				if huobiBuy < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("Spend ​$%.10f on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellCount))
-				tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+				log.Println(fmt.Sprintf("Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellBtcCount))
+				tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 			} else {
 				// todo huobi buy bianAccount.btc*huobiPrice, bian sell bianAccount.Btc
 				huobiBuy := bianAccount.Btc * huobiPrice
-				bianSellCount := bianAccount.Btc
+				bianSellBtcCount := bianAccount.Btc
 				if huobiBuy < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("Spend ​$%.10f on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellCount))
-				tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+				log.Println(fmt.Sprintf("Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellBtcCount))
+				tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 			}
+		}
+	} else if currDiffPrice < targetBalancedDiffPrice {
+		// When Binance's funds are seriously out of balance, it will trade to balance the capital when the price difference is lowest
+		bianUsdtValue := bianAccount.Usdt / bianPrice
+		if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
+			// sell huobi, buy bian
+			bianBuyBtcCount := bianUsdtValue - (bianAccount.Btc+bianUsdtValue)/2
+			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSell ​%.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", bianBuyBtcCount, bianBuyBtcCount))
+			tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+		} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
+			// buy huobi, sell bian
+			bianSellCount := bianAccount.Btc - (bianAccount.Btc+bianUsdtValue)/2
+			huobiBuy := bianSellCount * bianPrice
+			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellCount))
+			tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
 		}
 	}
 }
@@ -109,12 +133,12 @@ func tradeTest(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 
 	costTime := utils.UnixMillis(time.Now()) - startTime
 	if huobiIsGreaterThanBian {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get $%.10f, Average Price: $%.10f\nBinance: Buy %.10f BTC, Take $%.10f, Average Price: $%.10f\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
 			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
 	} else {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take $%.10f, Average Price: $%.10f\nBinance: Sell %.10f BTC,  Get $%.10f, Average Price: $%.10f\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
 			huobiValue/testHuoBiPrice, huobiValue, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
@@ -127,7 +151,7 @@ func tradeHuobiTest(symbol string) {
 }
 
 func tradeBianTest(symbol string) {
-	defer getPriceThread.Done()
+	defer tradeTestThread.Done()
 	testBianPrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
 }
 
@@ -151,7 +175,7 @@ func getBianLastPrice(symbol string) float64 {
 	defer getPriceThread.Done()
 	bianPrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
 	costTime := utils.UnixMillis(time.Now()) - startTime
-	log.Println(fmt.Sprintf("The last %s price in Bian : %.10f, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
+	log.Println(fmt.Sprintf("The last %s price in Bian : %.10f USD, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
 	return bianPrice
 }
 
@@ -160,7 +184,7 @@ func getHuobiLastPrice(symbol string) float64 {
 	defer getPriceThread.Done()
 	huobiPrice = api.HuobiLastPrice(symbol).Tick.Data[0].Price
 	costTime := utils.UnixMillis(time.Now()) - startTime
-	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
+	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f USD, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
 	return huobiPrice
 }
 

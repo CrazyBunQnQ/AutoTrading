@@ -7,14 +7,15 @@ import (
 )
 
 type conf struct {
-	Database       database `yaml:"database"`
-	Binance        binance  `yaml:"binance"`
-	Huobi          huobi    `yaml:"huobi"`
-	Okex           okex     `yaml:"okex"`
-	Otcbtc         otcbtc   `yaml:"otcbtc"`
-	PlatformDiff   float64  `yaml:"platform_diff"`
-	AmountPerTrade float64  `yaml:"amount_per_trade"`
-	Version        string   `yaml:"version"`
+	Database              database `yaml:"database"`
+	Binance               binance  `yaml:"binance"`
+	Huobi                 huobi    `yaml:"huobi"`
+	Okex                  okex     `yaml:"okex"`
+	Otcbtc                otcbtc   `yaml:"otcbtc"`
+	PlatformDiffPoint     float64  `yaml:"platform_diff_point"`
+	PlatformBalancedPoint float64  `yaml:"platform_balanced_point"`
+	AmountPerTrade        float64  `yaml:"amount_per_trade"`
+	Version               string   `yaml:"version"`
 }
 
 type database struct {
@@ -60,7 +61,8 @@ var BianConf binance
 var HuoBiConf huobi
 var OkexConf okex
 var OtcbtcConf otcbtc
-var PlatformDiff float64
+var PlatformDiffPoint float64
+var PlatformBalancedPoint float64
 var AmountPerTrade float64
 var Version string
 
@@ -81,7 +83,8 @@ func init() {
 	HuoBiConf = c.Huobi
 	OkexConf = c.Okex
 	OtcbtcConf = c.Otcbtc
-	PlatformDiff = c.PlatformDiff
+	PlatformDiffPoint = c.PlatformDiffPoint
+	PlatformBalancedPoint = c.PlatformBalancedPoint
 	AmountPerTrade = c.AmountPerTrade
 	Version = c.Version
 }
