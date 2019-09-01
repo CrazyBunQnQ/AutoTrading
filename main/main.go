@@ -4,7 +4,6 @@ import (
 	"AutoTrading/strategy"
 	"io"
 	"net/http"
-	"time"
 )
 
 func main() {
@@ -23,8 +22,5 @@ func stop(w http.ResponseWriter, r *http.Request) {
 }
 
 func platformDiff() {
-	for true {
-		strategy.RunPlatformDiffStrategy()
-		time.Sleep(time.Duration(3) * time.Second)
-	}
+	strategy.RunPlatformDiffStrategy()
 }
