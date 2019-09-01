@@ -257,6 +257,17 @@ func GetAccountBalance(strAccountID string) models.BalanceReturn {
 
 //------------------------------------------------------------------------------------------
 // Transaction API
+func HuobiOrderByMarket(accountId int64, symbol, side string, quantity float64) models.PlaceReturn {
+	var placeParams models.PlaceRequestParams
+	placeParams.AccountID = strconv.Itoa(int(accountId))
+	placeParams.Amount = strconv.FormatFloat(quantity, 'f', -1, 64)
+	placeParams.Symbol = symbol
+	placeParams.Type = side + "-market"
+
+	fmt.Println("Place order with: ", placeParams)
+	placeReturn := Place(placeParams)
+	return placeReturn
+}
 
 // Order
 // placeRequestParams: Order information

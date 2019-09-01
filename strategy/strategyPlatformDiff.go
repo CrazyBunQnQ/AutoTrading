@@ -18,7 +18,8 @@ import (
 var getPriceThread = sync.WaitGroup{}
 var tradeThread = sync.WaitGroup{}
 
-var bianPrice, huobiPrice float64
+var bianPrice, bianActualTradePrice, huobiPrice, huobiActualTradePrice float64
+var huobiAccountId = api.GetAccounts().Data[0].ID
 var bianAccount, huobiAccount models.Account
 
 func RunPlatformDiffStrategy() {
@@ -130,6 +131,42 @@ func startPlatformDiffStrategy() {
 	}
 }
 
+func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
+	startTime := utils.UnixMillis(time.Now())
+	symbol := "BTCUSDT"
+	symbolUpper := strings.ToUpper(symbol)
+	symbolLowwer := strings.ToLower(symbol)
+	tradeThread.Add(1)
+	go diffTradeHuobi(symbolLowwer)
+	tradeThread.Add(1)
+	go diffTradeBian(symbolUpper)
+	tradeThread.Wait()
+
+	costTime := utils.UnixMillis(time.Now()) - startTime
+	if huobiIsGreaterThanBian {
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
+			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice,
+			bianValue, bianValue*testBianPrice, testBianPrice,
+			costTime))
+	} else {
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
+			huobiValue/testHuoBiPrice, huobiValue, testHuoBiPrice,
+			bianValue, bianValue*testBianPrice, testBianPrice,
+			costTime))
+	}
+}
+
+func diffTradeHuobi(symbol string) {
+	defer tradeThread.Done()
+	huobiActualTradePrice = api.HuobiLastPrice(symbol).Tick.Data[0].Price
+}
+
+func diffTradeBian(symbol string) {
+	defer tradeThread.Done()
+	api.BianOrderByMarket(symbol, models.SideBuy, 0.002, 0)
+	bianActualTradePrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
+}
+
 var tradeTestThread = sync.WaitGroup{}
 var testHuoBiPrice, testBianPrice float64
 
@@ -180,9 +217,6 @@ func DepthWebsocket(symbol string) (chan *models.DepthEvent, chan struct{}, erro
 	return nil, done, nil
 }
 
-// TODO Platforms with low balances sell more
-// TODO Send alerts when there is a serious imbalance
-
 func getBianLastPrice(symbol string) float64 {
 	startTime := utils.UnixMillis(time.Now())
 	defer getPriceThread.Done()
@@ -211,7 +245,6 @@ func updateAccountBalance() {
 }
 
 func getHuobiBalance() models.Account {
-	huobiAccountId := api.GetAccounts().Data[0].ID
 	huobiBalanceReturn := api.GetAccountBalance(strconv.FormatInt(huobiAccountId, 10))
 	return formatHuobiBalance(huobiBalanceReturn)
 }
