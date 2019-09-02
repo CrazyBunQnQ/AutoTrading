@@ -46,14 +46,14 @@ func startPlatformDiffStrategy(isTest bool) {
 	getPriceThread.Wait()
 	if longTime {
 		longTime = false
-		log.Println("Take too long to give up this transaction...")
+		//log.Println("Take too long to give up this transaction...")
 		return
 	}
 
 	currDiffPrice, huobiIsGreaterThanBian := getDiffPrice(huobiPrice, bianPrice)
 	// TODO When the platform funds are seriously unbalanced, the threshold transfer funds will be lowered according to the situation.
-	targetDiffPrice := utils.Decimal(huobiPrice*config.PlatformDiffPoint, "2")
-	targetBalancedDiffPrice := utils.Decimal(huobiPrice*config.PlatformBalancedPoint, "2")
+	targetDiffPrice := huobiPrice * config.PlatformDiffPoint
+	targetBalancedDiffPrice := huobiPrice * config.PlatformBalancedPoint
 	if bianPrice == 0 {
 		log.Println("未获取到 Binance 的最新价格信息")
 		return
@@ -70,8 +70,8 @@ func startPlatformDiffStrategy(isTest bool) {
 			// Trading on both platforms when the transaction is successfully completed
 			if huobiAccount.Btc*bianPrice > bianAccount.Usdt {
 				// todo huobi sell bianAccount.Usdt/huobiPrice, bian buy bianAccount.Usdt
-				huobiSellBtcCount := utils.Decimal(bianAccount.Usdt/huobiPrice, "6")
-				bianBuyBtcCount := utils.Decimal(bianAccount.Usdt/bianPrice, "6")
+				huobiSellBtcCount := bianAccount.Usdt / huobiPrice
+				bianBuyBtcCount := bianAccount.Usdt / bianPrice
 				// Trading when the transaction amount is less than 15 USD
 				if bianAccount.Usdt < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
@@ -85,8 +85,8 @@ func startPlatformDiffStrategy(isTest bool) {
 				}
 			} else {
 				// todo huobi sell huobiAccount.Btc, bian buy huobiAccount.btc*bianPrice
-				huobiSellBtcCount := utils.Decimal(huobiAccount.Btc, "6")
-				bianBuyBtcCount := utils.Decimal(huobiAccount.Btc, "6")
+				huobiSellBtcCount := huobiAccount.Btc
+				bianBuyBtcCount := huobiAccount.Btc
 				if huobiAccount.Btc*bianPrice < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
@@ -103,8 +103,8 @@ func startPlatformDiffStrategy(isTest bool) {
 			// buy huobi, sell bian
 			if huobiAccount.Usdt < bianAccount.Btc*huobiPrice {
 				// todo huobi buy huobiAccount.Usdt, bian sell huobiAccount.Usdt/bianPrice
-				huobiBuy := utils.Decimal(huobiAccount.Usdt, "8")
-				bianSellBtcCount := utils.Decimal(huobiAccount.Usdt/bianPrice, "6")
+				huobiBuy := huobiAccount.Usdt
+				bianSellBtcCount := huobiAccount.Usdt / bianPrice
 				if huobiBuy < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
@@ -117,8 +117,8 @@ func startPlatformDiffStrategy(isTest bool) {
 				}
 			} else {
 				// todo huobi buy bianAccount.btc*huobiPrice, bian sell bianAccount.Btc
-				huobiBuy := utils.Decimal(bianAccount.Btc*huobiPrice, "8")
-				bianSellBtcCount := utils.Decimal(bianAccount.Btc, "6")
+				huobiBuy := bianAccount.Btc * huobiPrice
+				bianSellBtcCount := bianAccount.Btc
 				if huobiBuy < 15 {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
@@ -133,10 +133,10 @@ func startPlatformDiffStrategy(isTest bool) {
 		}
 	} else if currDiffPrice < targetBalancedDiffPrice {
 		// When Binance's funds are seriously out of balance, it will trade to balance the capital when the price difference is lowest
-		bianUsdtValue := utils.Decimal(bianAccount.Usdt/bianPrice, "6")
+		bianUsdtValue := bianAccount.Usdt / bianPrice
 		if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
 			// sell huobi, buy bian
-			bianBuyBtcCount := utils.Decimal(bianUsdtValue-(bianAccount.Btc+bianUsdtValue)/2, "6")
+			bianBuyBtcCount := bianUsdtValue - (bianAccount.Btc+bianUsdtValue)/2
 			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSell %.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", bianBuyBtcCount, bianBuyBtcCount))
 			if isTest {
 				tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
@@ -145,8 +145,8 @@ func startPlatformDiffStrategy(isTest bool) {
 			}
 		} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
 			// buy huobi, sell bian
-			bianSellCount := utils.Decimal(bianAccount.Btc-(bianAccount.Btc+bianUsdtValue)/2, "6")
-			huobiBuy := utils.Decimal(bianSellCount*bianPrice, "8")
+			bianSellCount := bianAccount.Btc - (bianAccount.Btc+bianUsdtValue)/2
+			huobiBuy := bianSellCount * bianPrice
 			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellCount))
 			if isTest {
 				tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
@@ -206,12 +206,17 @@ func bianAvgPrice(fills []models.BianFill) float64 {
 		totalQty = totalQty + curQty
 		totalUsdt = totalUsdt + curQty*curPrice
 	}
-	return utils.Decimal(totalUsdt/totalQty, "2")
+	return totalUsdt / totalQty
 }
 
 //amount: 限价表示下单数量, 市价买单时表示买多少钱, 市价卖单时表示卖多少币
 func diffTradeHuobi(symbol, side string, amount float64) {
 	defer tradeThread.Done()
+	if side == "sell" {
+		amount = utils.Decimal(amount, "6")
+	} else {
+		amount = utils.Decimal(amount, "8")
+	}
 	result := api.HuobiOrderByMarket(huobiAccountId, symbol, side, amount)
 	log.Println("Huobi order result:\n" + result.Data)
 	if result.Status == "error" {
@@ -223,7 +228,7 @@ func diffTradeHuobi(symbol, side string, amount float64) {
 
 func diffTradeBian(symbol string, side models.BianOrderSide, amount float64) {
 	defer tradeThread.Done()
-	bianOrderResult = api.BianOrderByMarket(symbol, side, amount, 0)
+	bianOrderResult = api.BianOrderByMarket(symbol, side, utils.Decimal(amount, "6"), 0)
 	if bianOrderResult.Err != "" {
 		log.Println(fmt.Sprintf("Trade Error on Binance: %s", bianOrderResult.Err))
 	}
@@ -293,7 +298,7 @@ func getHuobiLastPrice(symbol string) float64 {
 	startTime := utils.UnixMillis(time.Now())
 	defer getPriceThread.Done()
 	// 减去偏移量
-	huobiPrice = utils.Decimal(api.HuobiLastPrice(symbol).Tick.Data[0].Price-config.PlatformOffset, "2")
+	huobiPrice = api.HuobiLastPrice(symbol).Tick.Data[0].Price - config.PlatformOffset
 	costTime := utils.UnixMillis(time.Now()) - startTime
 	if costTime > 150 {
 		longTime = true
