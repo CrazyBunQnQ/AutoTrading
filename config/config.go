@@ -16,6 +16,7 @@ type conf struct {
 	PlatformBalancedPoint float64  `yaml:"platform_balanced_point"`
 	PlatformOffset        float64  `yaml:"platform_offset"`
 	AmountPerTrade        float64  `yaml:"amount_per_trade"`
+	Ifttt                 ifttt    `yaml:"ifttt"`
 	Version               string   `yaml:"version"`
 }
 
@@ -55,6 +56,13 @@ type otcbtc struct {
 	BaseUrl string `yaml:"baseurl"`
 }
 
+type ifttt struct {
+	Enabled     bool   `yaml:"enabled"`
+	Key         string `yaml:"key"`
+	WebhooksUrl string `yaml:"webhooks_url"`
+	EventName   string `yaml:"event_name"`
+}
+
 const configFile = "resources/config_private.yaml"
 
 var DBConf database
@@ -66,6 +74,7 @@ var PlatformDiffPoint float64
 var PlatformBalancedPoint float64
 var PlatformOffset float64
 var AmountPerTrade float64
+var Ifttt ifttt
 var Version string
 
 func init() {
@@ -89,5 +98,6 @@ func init() {
 	PlatformBalancedPoint = c.PlatformBalancedPoint
 	AmountPerTrade = c.AmountPerTrade
 	PlatformOffset = c.PlatformOffset
+	Ifttt = c.Ifttt
 	Version = c.Version
 }

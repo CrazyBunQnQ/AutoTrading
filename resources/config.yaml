@@ -39,4 +39,11 @@ platform_balanced_point: 0.00006
 platform_offset: 0
 amount_per_trade: 100
 
+# IFTTT
+ifttt:
+  enabled: true
+  key: your IFTTT key
+  webhooks_url: https://maker.ifttt.com/trigger/%s/with/key/%s
+  event_name: your event name
+
 version: 1.0

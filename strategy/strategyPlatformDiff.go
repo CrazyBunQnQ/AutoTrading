@@ -181,18 +181,24 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	huobiQty, huobiAvgPrice := huobiAvgPrice(huobiOrderResult.Data)
 	bianQty, _ := strconv.ParseFloat(bianOrderResult.ExecutedQty, 64)
 	_, bianAvgPrice := bianAvgPrice(bianOrderResult.Fills)
+	var logStr string
 	if huobiIsGreaterThanBian {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
+		logStr = fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
-			costTime))
+			costTime)
+		log.Println(logStr)
 	} else {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
+		logStr = fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
-			costTime))
+			costTime)
+		log.Println(logStr)
 	}
-	// TODO Email reminder when the Commission is insufficient
+	// reminder when the Commission is insufficient
+	if config.Ifttt.Enabled {
+		api.IftttNotice("完成一笔差价交易", logStr, "")
+	}
 
 	updateAccountBalance()
 }
