@@ -26,6 +26,7 @@ var bianOrderResult models.BianFullOrder
 var symbol = "BTCUSDT"
 var symbolUpper = strings.ToUpper(symbol)
 var symbolLowwer = strings.ToLower(symbol)
+var longTime = false
 
 func RunPlatformDiffStrategy(isTest bool) {
 	// Query the current balance of each platform account
@@ -43,6 +44,10 @@ func startPlatformDiffStrategy(isTest bool) {
 	getPriceThread.Add(1)
 	go getBianLastPrice(symbolUpper)
 	getPriceThread.Wait()
+	if longTime {
+		longTime = false
+		return
+	}
 
 	currDiffPrice, huobiIsGreaterThanBian := getDiffPrice(huobiPrice, bianPrice)
 	// TODO When the platform funds are seriously unbalanced, the threshold transfer funds will be lowered according to the situation.
@@ -276,6 +281,9 @@ func getBianLastPrice(symbol string) float64 {
 	bianPrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
 	bianPrice = utils.Decimal(bianPrice, "2")
 	costTime := utils.UnixMillis(time.Now()) - startTime
+	if costTime > 150 {
+		longTime = true
+	}
 	log.Println(fmt.Sprintf("The last %s price in Bian : %.10f USD, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
 	return bianPrice
 }
@@ -286,6 +294,9 @@ func getHuobiLastPrice(symbol string) float64 {
 	// 减去偏移量
 	huobiPrice = utils.Decimal(api.HuobiLastPrice(symbol).Tick.Data[0].Price-config.PlatformOffset, "2")
 	costTime := utils.UnixMillis(time.Now()) - startTime
+	if costTime > 150 {
+		longTime = true
+	}
 	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f USD, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
 	return huobiPrice
 }
