@@ -59,3 +59,8 @@ func UnixMillis(t time.Time) int64 {
 func RecvWindow(d time.Duration) int64 {
 	return int64(d) / int64(time.Millisecond)
 }
+
+func Decimal(value float64, v string) float64 {
+	value, _ = strconv.ParseFloat(fmt.Sprintf("%."+v+"f", value), 64)
+	return value
+}

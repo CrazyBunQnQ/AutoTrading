@@ -33,7 +33,7 @@ huobi:
 otcbtc:
   baseurl: https://bb.otcbtc.com
 
-platform_diff_point: 0.0005
+platform_diff_point: 0.00065
 platform_balanced_point: 0.00006
 amount_per_trade: 100
 

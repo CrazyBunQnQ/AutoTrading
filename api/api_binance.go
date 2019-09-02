@@ -326,8 +326,6 @@ func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebe
 
 	mapParams := make(map[string]string)
 	mapParams["type"] = string(models.TypeMarket)
-	// fastest response type
-	//mapParams["newOrderRespType"] = string(models.AckResponse)
 	mapParams["symbol"] = symbol
 	mapParams["side"] = string(side)
 	mapParams["quantity"] = strconv.FormatFloat(quantity, 'f', -1, 64)
