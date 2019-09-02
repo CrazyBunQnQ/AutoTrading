@@ -27,16 +27,16 @@ var symbol = "BTCUSDT"
 var symbolUpper = strings.ToUpper(symbol)
 var symbolLowwer = strings.ToLower(symbol)
 
-func RunPlatformDiffStrategy() {
+func RunPlatformDiffStrategy(isTest bool) {
 	// Query the current balance of each platform account
 	updateAccountBalance()
 	for true {
-		startPlatformDiffStrategy()
+		startPlatformDiffStrategy(isTest)
 		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
 
-func startPlatformDiffStrategy() {
+func startPlatformDiffStrategy(isTest bool) {
 
 	getPriceThread.Add(1)
 	go getHuobiLastPrice(symbolLowwer)
@@ -72,8 +72,11 @@ func startPlatformDiffStrategy() {
 					return
 				}
 				log.Println(fmt.Sprintf("Trade start...\nSell ​%.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", huobiSellBtcCount, bianBuyBtcCount))
-				//tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
-				diffTrade(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				if isTest {
+					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				}
 			} else {
 				// todo huobi sell huobiAccount.Btc, bian buy huobiAccount.btc*bianPrice
 				huobiSellBtcCount := utils.Decimal(huobiAccount.Btc, "6")
@@ -84,8 +87,11 @@ func startPlatformDiffStrategy() {
 				}
 				// Trading when the transaction amount is less than 15 USD
 				log.Println(fmt.Sprintf("Trade start...\nSell ​%.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", huobiSellBtcCount, bianBuyBtcCount))
-				//tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
-				diffTrade(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				if isTest {
+					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				}
 			}
 		} else {
 			// buy huobi, sell bian
@@ -98,8 +104,11 @@ func startPlatformDiffStrategy() {
 					return
 				}
 				log.Println(fmt.Sprintf("Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellBtcCount))
-				//tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
-				diffTrade(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				if isTest {
+					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				}
 			} else {
 				// todo huobi buy bianAccount.btc*huobiPrice, bian sell bianAccount.Btc
 				huobiBuy := utils.Decimal(bianAccount.Btc*huobiPrice, "8")
@@ -109,8 +118,11 @@ func startPlatformDiffStrategy() {
 					return
 				}
 				log.Println(fmt.Sprintf("Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellBtcCount))
-				//tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
-				diffTrade(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				if isTest {
+					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
+				}
 			}
 		}
 	} else if currDiffPrice < targetBalancedDiffPrice {
@@ -120,15 +132,21 @@ func startPlatformDiffStrategy() {
 			// sell huobi, buy bian
 			bianBuyBtcCount := utils.Decimal(bianUsdtValue-(bianAccount.Btc+bianUsdtValue)/2, "6")
 			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSell %.10f BTC on the Huobi\n Buy %.10f BTC on the Binance", bianBuyBtcCount, bianBuyBtcCount))
-			//tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
-			diffTrade(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+			if isTest {
+				tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+			} else {
+				diffTrade(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+			}
 		} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
 			// buy huobi, sell bian
 			bianSellCount := utils.Decimal(bianAccount.Btc-(bianAccount.Btc+bianUsdtValue)/2, "6")
 			huobiBuy := utils.Decimal(bianSellCount*bianPrice, "8")
 			log.Println(fmt.Sprintf("Balanced funds, Trade start...\nSpend ​%.10f USD on the Huobi to buy BTC\nSell %.10f BTC on the Binance", huobiBuy, bianSellCount))
-			//tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
-			diffTrade(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+			if isTest {
+				tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+			} else {
+				diffTrade(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+			}
 		}
 	}
 }
@@ -265,7 +283,8 @@ func getBianLastPrice(symbol string) float64 {
 func getHuobiLastPrice(symbol string) float64 {
 	startTime := utils.UnixMillis(time.Now())
 	defer getPriceThread.Done()
-	huobiPrice = utils.Decimal(api.HuobiLastPrice(symbol).Tick.Data[0].Price, "2")
+	// 减去偏移量
+	huobiPrice = utils.Decimal(api.HuobiLastPrice(symbol).Tick.Data[0].Price-config.PlatformOffset, "2")
 	costTime := utils.UnixMillis(time.Now()) - startTime
 	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f USD, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
 	return huobiPrice

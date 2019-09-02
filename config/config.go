@@ -14,6 +14,7 @@ type conf struct {
 	Otcbtc                otcbtc   `yaml:"otcbtc"`
 	PlatformDiffPoint     float64  `yaml:"platform_diff_point"`
 	PlatformBalancedPoint float64  `yaml:"platform_balanced_point"`
+	PlatformOffset        float64  `yaml:"platform_offset"`
 	AmountPerTrade        float64  `yaml:"amount_per_trade"`
 	Version               string   `yaml:"version"`
 }
@@ -63,6 +64,7 @@ var OkexConf okex
 var OtcbtcConf otcbtc
 var PlatformDiffPoint float64
 var PlatformBalancedPoint float64
+var PlatformOffset float64
 var AmountPerTrade float64
 var Version string
 
@@ -86,5 +88,6 @@ func init() {
 	PlatformDiffPoint = c.PlatformDiffPoint
 	PlatformBalancedPoint = c.PlatformBalancedPoint
 	AmountPerTrade = c.AmountPerTrade
+	PlatformOffset = c.PlatformOffset
 	Version = c.Version
 }
