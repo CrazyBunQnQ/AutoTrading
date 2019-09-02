@@ -6,6 +6,7 @@ import (
 	"AutoTrading/utils"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
 )
 
@@ -267,6 +268,17 @@ func HuobiOrderByMarket(accountId int64, symbol, side string, quantity float64) 
 	fmt.Println("Place order with: ", placeParams)
 	placeReturn := Place(placeParams)
 	return placeReturn
+}
+
+func HuobiOrderQuery(strOrderID string) (string, string) {
+	strRequest := fmt.Sprintf("/v1/order/orders/%s", strOrderID)
+	jsonPlaceReturn, err := utils.ApiKeyGet(make(map[string]string), strRequest)
+	if err != "" {
+		log.Println(fmt.Sprintf("Get order info error on Huobi: %s", err))
+		return "", err
+	} else {
+		return jsonPlaceReturn, ""
+	}
 }
 
 // Order
