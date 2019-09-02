@@ -336,7 +336,7 @@ func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebe
 		mapParams["icebergQty"] = strconv.FormatFloat(icebergQty, 'f', -1, 64)
 	}
 
-	strRequestUrl := "/api/v3/order/"
+	strRequestUrl := "/api/v3/order"
 	strUrl := config.BianConf.BaseUrl + strRequestUrl
 
 	jsonReturn, err := utils.BianPostRequest(strUrl, mapParams, true)
