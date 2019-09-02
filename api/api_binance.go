@@ -321,13 +321,13 @@ func BianOrderByLimit(symbol string, side models.BianOrderSide, timeInForce mode
 	return result
 }
 
-func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebergQty float64) models.BianFastestOrder {
-	result := models.BianFastestOrder{}
+func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebergQty float64) models.BianFullOrder {
+	result := models.BianFullOrder{}
 
 	mapParams := make(map[string]string)
 	mapParams["type"] = string(models.TypeMarket)
 	// fastest response type
-	mapParams["newOrderRespType"] = string(models.AckResponse)
+	//mapParams["newOrderRespType"] = string(models.AckResponse)
 	mapParams["symbol"] = symbol
 	mapParams["side"] = string(side)
 	mapParams["quantity"] = strconv.FormatFloat(quantity, 'f', -1, 64)
@@ -342,6 +342,9 @@ func BianOrderByMarket(symbol string, side models.BianOrderSide, quantity, icebe
 	jsonReturn, err := utils.BianPostRequest(strUrl, mapParams, true)
 	if err != "" {
 		errJson := "{\"err\": \"" + err + "\"}"
+		json.Unmarshal([]byte(errJson), &result)
+	} else if jsonReturn == "<html><body><h2>404 Not found</h2></body></html>" {
+		errJson := "{\"err\": \"404 Not found\"}"
 		json.Unmarshal([]byte(errJson), &result)
 	} else {
 		json.Unmarshal([]byte(jsonReturn), &result)

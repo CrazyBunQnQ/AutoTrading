@@ -91,6 +91,55 @@ type BianFastestOrder struct {
 	Err           string `json:"err"`
 }
 
+//{
+//  "symbol": "BTCUSDT",
+//  "orderId": 618572878,
+//  "orderListId": -1,
+//  "clientOrderId": "IoDOi6SQfvLSC7M4Z9kQLN",
+//  "transactTime": 1567398074015,
+//  "price": "0.00000000",
+//  "origQty": "0.00103000",
+//  "executedQty": "0.00103000",
+//  "cummulativeQuoteQty": "10.04592990",
+//  "status": "FILLED",
+//  "timeInForce": "GTC",
+//  "type": "MARKET",
+//  "side": "BUY",
+//  "fills": [
+//    {
+//      "price": "9753.33000000",
+//      "qty": "0.00103000",
+//      "commission": "0.00035142",
+//      "commissionAsset": "BNB",
+//      "tradeId": 175017551
+//    }
+//  ]
+//}
+type BianFullOrder struct {
+	Symbol              string `json:"symbol"`
+	OrderID             int64  `json:"orderId"`
+	ClientOrderID       string `json:"clientOrderId"`
+	TransactTime        int64  `json:"transactTime"`
+	Price               string `json:"price"` // Market Order Always 0
+	OrigQty             string `json:"origQty"`
+	ExecutedQty         string `json:"executedQty"` // Actual transaction quantity
+	CummulativeQuoteQty string `json:"cummulativeQuoteQty"`
+	Status              string `json:"status"`
+	TimeInForce         string `json:"timeInForce"`
+	Type                string `json:"type"`
+	Side                string `json:"side"`
+	Fills               []BianFill
+	Err                 string `json:"err"`
+}
+
+type BianFill struct {
+	Price           string `json:"price"`
+	Qty             string `json:"qty"`
+	Commission      string `json:"commission"`
+	CommissionAsset string `json:"commissionAsset"`
+	TradeId         string `json:"tradeId"`
+}
+
 // ExecutedOrder represents data about executed order.
 type BianOrderStatus struct {
 	Symbol              string          `json:"symbol"`
