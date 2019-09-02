@@ -183,13 +183,13 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	_, bianAvgPrice := bianAvgPrice(bianOrderResult.Fills)
 	var logStr string
 	if huobiIsGreaterThanBian {
-		logStr = fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.8f USD, OrderID: %s\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.8f USD, OrderID: %d\nTrading time %d milliseconds",
+		logStr = fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD, OrderID: %s\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD, OrderID: %d\nTrading time %d milliseconds",
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
 		log.Println(logStr)
 	} else {
-		logStr = fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.2f BTC, Take %.8f USD, Average Price: %.8f USD, OrderID: %s\nBinance: Sell %.2f BTC,  Get %.8f USD, Average Price: %.8f USD, OrderID: %d\nTrading time %d milliseconds",
+		logStr = fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD, OrderID: %s\nBinance: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD, OrderID: %d\nTrading time %d milliseconds",
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
@@ -267,12 +267,12 @@ func tradeTest(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 
 	costTime := utils.UnixMillis(time.Now()) - startTime
 	if huobiIsGreaterThanBian {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
 			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
 	} else {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD\nBinance: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
 			huobiValue/testHuoBiPrice, huobiValue, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
@@ -310,7 +310,7 @@ func getBianLastPrice(symbol string) float64 {
 	if costTime > 150 {
 		longTime = true
 	}
-	log.Println(fmt.Sprintf("The last %s price in Bian : %.10f USD, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
+	log.Println(fmt.Sprintf("The last %s price in Bian : %.2f USD, start at %d, takes %dms", symbol, bianPrice, startTime, costTime))
 	return bianPrice
 }
 
@@ -323,7 +323,7 @@ func getHuobiLastPrice(symbol string) float64 {
 	if costTime > 150 {
 		longTime = true
 	}
-	log.Println(fmt.Sprintf("The last %s price in Huobi: %.10f USD, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
+	log.Println(fmt.Sprintf("The last %s price in Huobi: %.2f USD, start at %d, takes %dms", symbol, huobiPrice, startTime, costTime))
 	return huobiPrice
 }
 
