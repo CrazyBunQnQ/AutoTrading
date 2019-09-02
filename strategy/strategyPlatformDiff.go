@@ -21,6 +21,11 @@ var tradeThread = sync.WaitGroup{}
 var bianPrice, bianActualTradePrice, huobiPrice, huobiActualTradePrice float64
 var huobiAccountId = api.GetAccounts().Data[0].ID
 var bianAccount, huobiAccount models.Account
+var huobiResultOrderId string
+var bianResultOrderId int64
+var symbol = "BTCUSDT"
+var symbolUpper = strings.ToUpper(symbol)
+var symbolLowwer = strings.ToLower(symbol)
 
 func RunPlatformDiffStrategy() {
 	// Query the current balance of each platform account
@@ -33,9 +38,6 @@ func RunPlatformDiffStrategy() {
 
 func startPlatformDiffStrategy() {
 
-	symbol := "BTCUSDT"
-	symbolUpper := strings.ToUpper(symbol)
-	symbolLowwer := strings.ToLower(symbol)
 	getPriceThread.Add(1)
 	go getHuobiLastPrice(symbolLowwer)
 	getPriceThread.Add(1)
@@ -133,16 +135,25 @@ func startPlatformDiffStrategy() {
 
 func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	startTime := utils.UnixMillis(time.Now())
-	symbol := "BTCUSDT"
-	symbolUpper := strings.ToUpper(symbol)
-	symbolLowwer := strings.ToLower(symbol)
+	var huobiSide string
+	var bianSide models.BianOrderSide
+	if huobiIsGreaterThanBian {
+		huobiSide = "sell"
+		bianSide = models.SideBuy
+	} else {
+		huobiSide = "buy"
+		bianSide = models.SideSell
+	}
 	tradeThread.Add(1)
-	go diffTradeHuobi(symbolLowwer)
+	go diffTradeHuobi(symbolLowwer, huobiSide, huobiValue)
 	tradeThread.Add(1)
-	go diffTradeBian(symbolUpper)
+	go diffTradeBian(symbolUpper, bianSide, bianValue)
 	tradeThread.Wait()
 
 	costTime := utils.UnixMillis(time.Now()) - startTime
+	// TODO Query order information
+	//huobiOrderResult := api.
+	//bianOrderResult := api.BianOrderQuery(symbolUpper, "", bianResultOrderId)
 	if huobiIsGreaterThanBian {
 		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD\nTrading time %d milliseconds",
 			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice,
@@ -156,15 +167,25 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	}
 }
 
-func diffTradeHuobi(symbol string) {
+//amount: 限价表示下单数量, 市价买单时表示买多少钱, 市价卖单时表示卖多少币
+func diffTradeHuobi(symbol, side string, amount float64) {
 	defer tradeThread.Done()
-	huobiActualTradePrice = api.HuobiLastPrice(symbol).Tick.Data[0].Price
+	result := api.HuobiOrderByMarket(huobiAccountId, symbol, side, amount)
+	if result.Status == "error" {
+		log.Println(fmt.Sprintf("Trade Error on Huobi: %s -> %s", result.ErrCode, result.ErrMsg))
+	} else {
+		huobiResultOrderId = result.Data
+	}
 }
 
-func diffTradeBian(symbol string) {
+func diffTradeBian(symbol string, side models.BianOrderSide, amount float64) {
 	defer tradeThread.Done()
-	api.BianOrderByMarket(symbol, models.SideBuy, 0.002, 0)
-	bianActualTradePrice, _ = strconv.ParseFloat(api.BianLastPrice(symbol).Price, 64)
+	result := api.BianOrderByMarket(symbol, side, amount, 0)
+	if result.Err == "" {
+		log.Println(fmt.Sprintf("Trade Error on Binance: %s", result.Err))
+	} else {
+		bianResultOrderId = result.OrderID
+	}
 }
 
 var tradeTestThread = sync.WaitGroup{}
@@ -172,9 +193,6 @@ var testHuoBiPrice, testBianPrice float64
 
 func tradeTest(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	startTime := utils.UnixMillis(time.Now())
-	symbol := "BTCUSDT"
-	symbolUpper := strings.ToUpper(symbol)
-	symbolLowwer := strings.ToLower(symbol)
 	tradeTestThread.Add(1)
 	go tradeHuobiTest(symbolLowwer)
 	tradeTestThread.Add(1)
