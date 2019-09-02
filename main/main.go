@@ -22,5 +22,5 @@ func stop(w http.ResponseWriter, r *http.Request) {
 }
 
 func platformDiff() {
-	strategy.RunPlatformDiffStrategy(true)
+	strategy.RunPlatformDiffStrategy(false)
 }

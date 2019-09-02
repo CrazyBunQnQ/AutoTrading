@@ -33,7 +33,7 @@ func RunPlatformDiffStrategy(isTest bool) {
 	updateAccountBalance()
 	for true {
 		startPlatformDiffStrategy(isTest)
-		time.Sleep(time.Duration(2) * time.Second)
+		time.Sleep(time.Duration(1) * time.Second)
 	}
 }
 
@@ -46,6 +46,7 @@ func startPlatformDiffStrategy(isTest bool) {
 	getPriceThread.Wait()
 	if longTime {
 		longTime = false
+		log.Println("Take too long to give up this transaction...")
 		return
 	}
 
