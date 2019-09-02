@@ -205,3 +205,25 @@ type CurrencysReturn struct {
 	ErrCode string   `json:"err-code"`
 	ErrMsg  string   `json:"err-msg"`
 }
+
+type HuobiFullOrder struct {
+	Status string `json:"status"`
+	Data   []HuobiFill
+	Err    string `json:"err"`
+}
+
+type HuobiFill struct {
+	Symbol            string `json:"symbol"`
+	OrderID           int64  `json:"order-id"`
+	Price             string `json:"price"`
+	FilledPoints      string `json:"filled-points"`
+	FeeDeductCurrency string `json:"fee-deduct-currency"`
+	Source            string `json:"source"`
+	MatchId           int64  `json:"match-id"`
+	Role              string `json:"role"`
+	CreatedAt         int64  `json:"created-at"`
+	FilledAmount      string `json:"filled-amount"`
+	FilledFees        string `json:"filled-fees"`
+	Id                int64  `json:"id"`
+	Type              string `json:"type"`
+}

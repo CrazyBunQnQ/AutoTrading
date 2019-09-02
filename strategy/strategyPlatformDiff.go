@@ -177,27 +177,41 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 	costTime := utils.UnixMillis(time.Now()) - startTime
 
 	// Query order information
-	huobiOrderResult, _ := api.HuobiOrderQuery(huobiResultOrderId)
+	huobiOrderResult := api.HuobiOrderQueryDetail(huobiResultOrderId)
+	huobiQty, huobiAvgPrice := huobiAvgPrice(huobiOrderResult.Data)
 	bianQty, _ := strconv.ParseFloat(bianOrderResult.ExecutedQty, 64)
-	bianAvgPrice := bianAvgPrice(bianOrderResult.Fills)
+	_, bianAvgPrice := bianAvgPrice(bianOrderResult.Fills)
 	if huobiIsGreaterThanBian {
 		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
-			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice, huobiResultOrderId,
+			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime))
 	} else {
 		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.10f BTC, Take %.10f USD, Average Price: %.10f USD, OrderID: %s\nBinance: Sell %.10f BTC,  Get %.10f USD, Average Price: %.10f USD, OrderID: %d\nTrading time %d milliseconds",
-			huobiValue/testHuoBiPrice, huobiValue, testHuoBiPrice, huobiResultOrderId,
+			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime))
 	}
-	log.Println("Huobi:\n" + huobiOrderResult)
 	// TODO Email reminder when the Commission is insufficient
 
 	updateAccountBalance()
 }
 
-func bianAvgPrice(fills []models.BianFill) float64 {
+// return qty, avg price
+func huobiAvgPrice(fills []models.HuobiFill) (float64, float64) {
+	var totalQty float64 = 0
+	var totalUsdt float64 = 0
+	for _, fill := range fills {
+		curQty, _ := strconv.ParseFloat(fill.FilledAmount, 64)
+		curPrice, _ := strconv.ParseFloat(fill.Price, 64)
+		totalQty = totalQty + curQty
+		totalUsdt = totalUsdt + curQty*curPrice
+	}
+	return totalQty, totalUsdt / totalQty
+}
+
+// return qty, avg price
+func bianAvgPrice(fills []models.BianFill) (float64, float64) {
 	var totalQty float64 = 0
 	var totalUsdt float64 = 0
 	for _, fill := range fills {
@@ -206,7 +220,7 @@ func bianAvgPrice(fills []models.BianFill) float64 {
 		totalQty = totalQty + curQty
 		totalUsdt = totalUsdt + curQty*curPrice
 	}
-	return totalUsdt / totalQty
+	return totalQty, totalUsdt / totalQty
 }
 
 //amount: 限价表示下单数量, 市价买单时表示买多少钱, 市价卖单时表示卖多少币

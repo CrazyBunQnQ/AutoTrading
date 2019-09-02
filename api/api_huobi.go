@@ -281,6 +281,18 @@ func HuobiOrderQuery(strOrderID string) (string, string) {
 	}
 }
 
+func HuobiOrderQueryDetail(strOrderID string) models.HuobiFullOrder {
+	orderResult := models.HuobiFullOrder{}
+	strRequest := fmt.Sprintf("/v1/order/orders/%s/matchresults", strOrderID)
+	jsonPlaceReturn, err := utils.ApiKeyGet(make(map[string]string), strRequest)
+	json.Unmarshal([]byte(jsonPlaceReturn), &orderResult)
+	if err != "" {
+		log.Println(fmt.Sprintf("Get order info error on Huobi: %s", err))
+		orderResult.Err = err
+	}
+	return orderResult
+}
+
 // Order
 // placeRequestParams: Order information
 // return: PlaceReturn Object
