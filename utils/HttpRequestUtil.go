@@ -182,7 +182,7 @@ func ApiKeyPost(mapParams map[string]string, strRequestPath string) string {
 	mapParams2Sign["SignatureVersion"] = "2"
 	mapParams2Sign["Timestamp"] = timestamp
 
-	hostName := config.HuoBiConf.MarketUrl
+	hostName := config.HuoBiConf.HostName
 
 	mapParams2Sign["Signature"] = CreateSign(mapParams2Sign, strMethod, hostName, strRequestPath, config.HuoBiConf.SecretKeyPrivate)
 
