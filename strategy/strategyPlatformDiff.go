@@ -57,10 +57,10 @@ func startPlatformDiffStrategy(isTest bool) {
 	logPrefix := ""
 	if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
 		targetDiffPrice = targetDiffPrice / 2.5
-		logPrefix = "Balanced funds, "
+		logPrefix = "平衡资金, "
 	} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
 		targetDiffPrice = targetDiffPrice / 2.5
-		logPrefix = "Balanced funds, "
+		logPrefix = "平衡资金, "
 	}
 	if bianPrice == 0 {
 		log.Println("未获取到 Binance 的最新价格信息")
@@ -71,12 +71,10 @@ func startPlatformDiffStrategy(isTest bool) {
 		return
 	}
 	if currDiffPrice >= targetDiffPrice {
-		log.Println(fmt.Sprintf("Diff price is %.2f USD, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, huobiIsGreaterThanBian))
-
-		if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
-			// sell huobi, buy bian
-		} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
-			// buy huobi, sell bian
+		if huobiIsGreaterThanBian {
+			log.Println(fmt.Sprintf("差价 %.2f USD, 火币的价格大于币安的价格", currDiffPrice))
+		} else {
+			log.Println(fmt.Sprintf("差价 %.2f USD, 火币的价格小于币安的价格", currDiffPrice))
 		}
 
 		// base bian, 币安买卖都是数量, 火币买入用交易额，卖出用数量
@@ -85,7 +83,7 @@ func startPlatformDiffStrategy(isTest bool) {
 			// Trading on both platforms when the transaction is successfully completed
 			if logPrefix != "" {
 				bianBuyBtcCount := bianUsdtValue - (bianAccount.Btc+bianUsdtValue)/2
-				log.Println(fmt.Sprintf("%sTrade start...\nSell %.2f BTC on the Huobi\n Buy %.2f BTC on the Binance", logPrefix, bianBuyBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, bianBuyBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -100,7 +98,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%sTrade start...\nSell ​%.2f BTC on the Huobi\n Buy %.2f BTC on the Binance", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -115,7 +113,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					return
 				}
 				// Trading when the transaction amount is less than 15 USD
-				log.Println(fmt.Sprintf("%sTrade start...\nSell ​%.2f BTC on the Huobi\n Buy %.2f BTC on the Binance", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -127,7 +125,7 @@ func startPlatformDiffStrategy(isTest bool) {
 			if logPrefix != "" {
 				bianSellCount := bianAccount.Btc - (bianAccount.Btc+bianUsdtValue)/2
 				huobiBuy := bianSellCount * bianPrice
-				log.Println(fmt.Sprintf("%sTrade start...\nSpend ​%.8f USD on the Huobi to buy BTC\nSell %.2f BTC on the Binance", logPrefix, huobiBuy, bianSellCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
 				} else {
@@ -141,7 +139,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%sTrade start...\nSpend ​%.8f USD on the Huobi to buy BTC\nSell %.2f BTC on the Binance", logPrefix, huobiBuy, bianSellBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellBtcCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -155,7 +153,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%sTrade start...\nSpend ​%.8f USD on the Huobi to buy BTC\nSell %.2f BTC on the Binance", logPrefix, huobiBuy, bianSellBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellBtcCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -197,13 +195,13 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool, logPr
 	_, bianAvgPrice := getBianAvgPrice(bianOrderResult.Fills)
 	var logStr string
 	if huobiIsGreaterThanBian {
-		logStr = fmt.Sprintf("%sSuccessful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD, OrderID: %s\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD, OrderID: %d\nTrading time %d milliseconds", logPrefix,
+		logStr = fmt.Sprintf("%s交易成功:\n火币出售 %.2f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安购买 %.2f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
 		log.Println(logStr)
 	} else {
-		logStr = fmt.Sprintf("%sSuccessful Transaction:\nHuo  Bi:  Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD, OrderID: %s\nBinance: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD, OrderID: %d\nTrading time %d milliseconds", logPrefix,
+		logStr = fmt.Sprintf("%s交易成功:\n火币购买 %.2f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安出售 %.2f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
@@ -217,12 +215,12 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool, logPr
 	// reminder when the Commission is insufficient
 	if config.Ifttt.Enabled {
 		log.Println("发送 IFTTT 消息提醒...")
-		api.IftttNotice("完成一笔差价交易", logStr, "")
+		api.IftttNotice("完成一笔交易", logStr, "")
 	}
 
-	log.Println(" Huobi  交易详情: ")
+	log.Println("火币交易详情: ")
 	log.Println(huobiOrderResult)
-	log.Println("Binance 交易详情: ")
+	log.Println("币安交易详情: ")
 	log.Println(bianOrderResult)
 
 	updateAccountBalance()

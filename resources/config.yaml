@@ -33,7 +33,7 @@ huobi:
 otcbtc:
   baseurl: https://bb.otcbtc.com
 
-platform_diff_point: 0.0009
+platform_diff_point: 0.001
 platform_balanced_point: 0.00006
 # The latest price Huobi is a little higher than Binance
 platform_offset: 0
