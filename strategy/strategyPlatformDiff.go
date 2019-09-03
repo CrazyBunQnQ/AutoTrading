@@ -83,7 +83,7 @@ func startPlatformDiffStrategy(isTest bool) {
 			// Trading on both platforms when the transaction is successfully completed
 			if logPrefix != "" {
 				bianBuyBtcCount := bianUsdtValue - (bianAccount.Btc+bianUsdtValue)/2
-				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, bianBuyBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.6f BTC\n币安购买 %.6f BTC", logPrefix, bianBuyBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -98,7 +98,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.6f BTC\n币安购买 %.6f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -113,7 +113,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					return
 				}
 				// Trading when the transaction amount is less than 15 USD
-				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.2f BTC\n币安买入 %.2f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币出售 %.6f BTC\n币安购买 %.6f BTC", logPrefix, huobiSellBtcCount, bianBuyBtcCount))
 				if isTest {
 					tradeTest(huobiSellBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -125,7 +125,7 @@ func startPlatformDiffStrategy(isTest bool) {
 			if logPrefix != "" {
 				bianSellCount := bianAccount.Btc - (bianAccount.Btc+bianUsdtValue)/2
 				huobiBuy := bianSellCount * bianPrice
-				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.6f BTC", logPrefix, huobiBuy, bianSellCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
 				} else {
@@ -139,7 +139,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.6f BTC", logPrefix, huobiBuy, bianSellBtcCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -153,7 +153,7 @@ func startPlatformDiffStrategy(isTest bool) {
 					log.Println("Did not reach the minimum order transaction amount, no transaction")
 					return
 				}
-				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.2f BTC", logPrefix, huobiBuy, bianSellBtcCount))
+				log.Println(fmt.Sprintf("%s开始交易...\n火币花费 ​%.8f USD 购买 BTC\n币安出售 %.6f BTC", logPrefix, huobiBuy, bianSellBtcCount))
 				if isTest {
 					tradeTest(huobiBuy, bianSellBtcCount, huobiIsGreaterThanBian)
 				} else {
@@ -195,13 +195,13 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool, logPr
 	_, bianAvgPrice := getBianAvgPrice(bianOrderResult.Fills)
 	var logStr string
 	if huobiIsGreaterThanBian {
-		logStr = fmt.Sprintf("%s交易成功:\n火币出售 %.2f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安购买 %.2f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
+		logStr = fmt.Sprintf("%s交易成功:\n火币出售 %.6f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安购买 %.6f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
 		log.Println(logStr)
 	} else {
-		logStr = fmt.Sprintf("%s交易成功:\n火币购买 %.2f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安出售 %.2f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
+		logStr = fmt.Sprintf("%s交易成功:\n火币购买 %.6f BTC, 花费 %.8f USD, 均价: %.2f USD, 订单号: %s\n币安出售 %.6f BTC, 获得 %.8f USD, 均价: %.2f USD, 订单号: %d\n交易用时 %d 毫秒", logPrefix,
 			huobiQty, huobiQty*huobiAvgPrice, huobiAvgPrice, huobiResultOrderId,
 			bianQty, bianQty*bianAvgPrice, bianAvgPrice, bianOrderResult.OrderID,
 			costTime)
@@ -290,12 +290,12 @@ func tradeTest(huobiValue, bianValue float64, huobiIsGreaterThanBian bool) {
 
 	costTime := utils.UnixMillis(time.Now()) - startTime
 	if huobiIsGreaterThanBian {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo Bi: Sell %.6f BTC,  Get %.8f USD, Average Price: %.2f USD\nBinance: Buy %.6f BTC, Take %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
 			huobiValue, huobiValue*testHuoBiPrice, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
 	} else {
-		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD\nBinance: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
+		log.Println(fmt.Sprintf("Successful Transaction:\nHuo  Bi:  Buy %.6f BTC, Take %.8f USD, Average Price: %.2f USD\nBinance: Sell %.6f BTC,  Get %.8f USD, Average Price: %.2f USD\nTrading time %d milliseconds",
 			huobiValue/testHuoBiPrice, huobiValue, testHuoBiPrice,
 			bianValue, bianValue*testBianPrice, testBianPrice,
 			costTime))
