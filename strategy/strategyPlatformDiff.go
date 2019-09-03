@@ -72,11 +72,26 @@ func startPlatformDiffStrategy(isTest bool) {
 	}
 	if currDiffPrice >= targetDiffPrice {
 		log.Println(fmt.Sprintf("Diff price is %.2f USD, the Huobi Price is greater than the Bian Price: %t", currDiffPrice, huobiIsGreaterThanBian))
+
+		if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
+			// sell huobi, buy bian
+		} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
+			// buy huobi, sell bian
+		}
+
 		// base bian, 币安买卖都是数量, 火币买入用交易额，卖出用数量
 		if huobiIsGreaterThanBian {
 			// sell huobi, buy bian
 			// Trading on both platforms when the transaction is successfully completed
-			if huobiAccount.Btc*bianPrice > bianAccount.Usdt {
+			if logPrefix != "" {
+				bianBuyBtcCount := bianUsdtValue - (bianAccount.Btc+bianUsdtValue)/2
+				log.Println(fmt.Sprintf("%sTrade start...\nSell %.2f BTC on the Huobi\n Buy %.2f BTC on the Binance", logPrefix, bianBuyBtcCount, bianBuyBtcCount))
+				if isTest {
+					tradeTest(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(bianBuyBtcCount, bianBuyBtcCount, huobiIsGreaterThanBian, logPrefix)
+				}
+			} else if huobiAccount.Btc*bianPrice > bianAccount.Usdt {
 				// huobi sell bianAccount.Usdt/huobiPrice, bian buy bianAccount.Usdt
 				huobiSellBtcCount := bianAccount.Usdt / huobiPrice
 				bianBuyBtcCount := bianAccount.Usdt / bianPrice
@@ -109,7 +124,16 @@ func startPlatformDiffStrategy(isTest bool) {
 			}
 		} else {
 			// buy huobi, sell bian
-			if huobiAccount.Usdt < bianAccount.Btc*huobiPrice {
+			if logPrefix != "" {
+				bianSellCount := bianAccount.Btc - (bianAccount.Btc+bianUsdtValue)/2
+				huobiBuy := bianSellCount * bianPrice
+				log.Println(fmt.Sprintf("%sTrade start...\nSpend ​%.8f USD on the Huobi to buy BTC\nSell %.2f BTC on the Binance", logPrefix, huobiBuy, bianSellCount))
+				if isTest {
+					tradeTest(huobiBuy, bianSellCount, huobiIsGreaterThanBian)
+				} else {
+					diffTrade(huobiBuy, bianSellCount, huobiIsGreaterThanBian, logPrefix)
+				}
+			} else if huobiAccount.Usdt < bianAccount.Btc*huobiPrice {
 				// huobi buy huobiAccount.Usdt, bian sell huobiAccount.Usdt/bianPrice
 				huobiBuy := huobiAccount.Usdt
 				bianSellBtcCount := huobiAccount.Usdt / bianPrice
