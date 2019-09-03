@@ -56,10 +56,10 @@ func startPlatformDiffStrategy(isTest bool) {
 	bianUsdtValue := bianAccount.Usdt / bianPrice
 	logPrefix := ""
 	if huobiIsGreaterThanBian && bianAccount.Btc < bianUsdtValue && bianAccount.Btc/bianUsdtValue < 0.5 {
-		targetDiffPrice = targetDiffPrice / 3
+		targetDiffPrice = targetDiffPrice / 2.5
 		logPrefix = "Balanced funds, "
 	} else if !huobiIsGreaterThanBian && bianAccount.Btc > bianUsdtValue && bianUsdtValue/bianAccount.Btc < 0.5 {
-		targetDiffPrice = targetDiffPrice / 3
+		targetDiffPrice = targetDiffPrice / 2.5
 		logPrefix = "Balanced funds, "
 	}
 	if bianPrice == 0 {
@@ -187,9 +187,14 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool, logPr
 
 	// Query order information
 	huobiOrderResult := api.HuobiOrderQueryDetail(huobiResultOrderId)
-	huobiQty, huobiAvgPrice := huobiAvgPrice(huobiOrderResult.Data)
+	huobiQty, huobiAvgPrice := getHuobiAvgPrice(huobiOrderResult.Data)
+	for huobiQty == 0 {
+		time.Sleep(time.Duration(100) * time.Millisecond)
+		huobiOrderResult = api.HuobiOrderQueryDetail(huobiResultOrderId)
+		huobiQty, huobiAvgPrice = getHuobiAvgPrice(huobiOrderResult.Data)
+	}
 	bianQty, _ := strconv.ParseFloat(bianOrderResult.ExecutedQty, 64)
-	_, bianAvgPrice := bianAvgPrice(bianOrderResult.Fills)
+	_, bianAvgPrice := getBianAvgPrice(bianOrderResult.Fills)
 	var logStr string
 	if huobiIsGreaterThanBian {
 		logStr = fmt.Sprintf("%sSuccessful Transaction:\nHuo Bi: Sell %.2f BTC,  Get %.8f USD, Average Price: %.2f USD, OrderID: %s\nBinance: Buy %.2f BTC, Take %.8f USD, Average Price: %.2f USD, OrderID: %d\nTrading time %d milliseconds", logPrefix,
@@ -224,7 +229,7 @@ func diffTrade(huobiValue, bianValue float64, huobiIsGreaterThanBian bool, logPr
 }
 
 // return qty, avg price
-func huobiAvgPrice(fills []models.HuobiFill) (float64, float64) {
+func getHuobiAvgPrice(fills []models.HuobiFill) (float64, float64) {
 	var totalQty float64 = 0
 	var totalUsdt float64 = 0
 	for _, fill := range fills {
@@ -237,7 +242,7 @@ func huobiAvgPrice(fills []models.HuobiFill) (float64, float64) {
 }
 
 // return qty, avg price
-func bianAvgPrice(fills []models.BianFill) (float64, float64) {
+func getBianAvgPrice(fills []models.BianFill) (float64, float64) {
 	var totalQty float64 = 0
 	var totalUsdt float64 = 0
 	for _, fill := range fills {
